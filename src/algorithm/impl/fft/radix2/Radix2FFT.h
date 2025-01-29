@@ -9,7 +9,7 @@ public:
     }
 
 protected:
-    static void check_preconditions(size_t n, ft_complex *in, ft_complex *out);
+    void check_preconditions(size_t n, ft_complex *in, ft_complex *out) override;
 };
 
 

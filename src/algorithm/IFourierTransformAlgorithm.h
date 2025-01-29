@@ -20,7 +20,7 @@ public:
     [[nodiscard]] const std::string &id() const;
 
 protected:
-    static void check_preconditions(size_t n, ft_complex *in, ft_complex *out);
+    virtual void check_preconditions(size_t n, ft_complex *in, ft_complex *out);
 
     virtual void initialize(size_t n, ft_complex *in, ft_complex *out);
 

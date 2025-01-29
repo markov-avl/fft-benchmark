@@ -26,7 +26,7 @@ static void fft(const size_t n, ft_complex *data) {
     transform(half, data);
 }
 
-void RecursiveRadix2FFT::forward(size_t n, ft_complex *in, ft_complex *out) {
+void RecursiveRadix2FFT::forward(const size_t n, ft_complex *in, ft_complex *out) {
     bit_shuffle(n, in, out);
     fft(n, out);
 }

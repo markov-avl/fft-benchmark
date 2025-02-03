@@ -1,3 +1,10 @@
 /cmake-build-debug
 /output
 /.idea
+BenchmarkRadix2
+CMakeCache.txt
+CMakeFiles/*
+Makefile
+Tests
+cmake_install.cmake
+*.swp

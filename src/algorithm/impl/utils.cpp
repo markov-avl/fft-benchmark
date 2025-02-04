@@ -164,7 +164,14 @@ void fft_of_8(ft_complex *data) {
 }
 
 void transform(const size_t half, ft_complex *data) {
-    transform(half, data, 0, half);
+	switch (half) {
+		case 1: {
+			fft_of_2(data);
+			break;
+		}
+		default:
+		    transform(half, data, 0, half);
+	}
 }
 
 void transform(const size_t half, ft_complex *data, const size_t from, const size_t to) {

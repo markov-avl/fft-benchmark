@@ -3,9 +3,41 @@
 #include <fftw3.h>
 #include <complex>
 #include <memory>
+#include <cmath>
+#include <bit>
+#include <algorithm>
 #include "algorithm.h"
 #include "output.h"
 
+template <class FP>
+static FP abs_error_ulps(FP f1, FP f2) {
+	if (f1 == f2)
+		return 0;
+	if (!f1)
+		return f2;
+	else if (!f2)
+		return f1;
+	return (f2 - f1) / (std::nextafter(f1, f2) - f1);
+}
+
+static bool compare_floats(auto f1, auto f2, auto ulp_tolerance) {
+	return abs_error_ulps(f1, f2) <= ulp_tolerance;
+}
+template <class Flt>
+static bool compare_complex(const std::complex<Flt>& left, const std::complex<Flt>& right, Flt ulp_tolerance_real, Flt ulp_tolerance_imag) {
+	return compare_floats(left.real(), right.real(), ulp_tolerance_real) && compare_floats(left.imag(), right.imag(), ulp_tolerance_imag);
+}
+template <class Flt>
+static bool compare_complex(const std::complex<Flt>& left, const std::complex<Flt>& right, Flt ulp_tolerance_real) {
+	return compare_complex(left, right, ulp_tolerance_real, ulp_tolerance_real);
+}
+
+static bool compare_complex(ft_complex left, ft_complex right, double ulp_tolerance_real, double ulp_tolerance_imag) {
+	return compare_floats(left[0], right[0], ulp_tolerance_real) && compare_floats(left[1], right[1], ulp_tolerance_imag);
+}
+static bool compare_complex(ft_complex left, ft_complex right, double ulp_tolerance_real) {
+	return compare_complex(left, right, ulp_tolerance_real, ulp_tolerance_real);
+}
 
 bool test_with_fftw(const std::string &test_name,
                     const size_t n,
@@ -25,15 +57,18 @@ bool test_with_fftw(const std::string &test_name,
     algorithm->run(n, input, custom_output);
     fftw_execute(p);
 
-    bool correct = true;
-    for (size_t i = 0; i < n; ++i) {
-        std::complex fftw_result(out[i][0], out[i][1]);
-        std::complex custom_result(custom_output[i][0], custom_output[i][1]);
-        if (std::abs(custom_result - fftw_result) > 1e-6) {
-            correct = false;
-            std::cout << "Test '" << test_name << "' failed at index " << i << ": "
-                    << custom_result << " != " << fftw_result << std::endl;
-        }
+    double ulp_tolerance = n*n;
+#ifdef TEST_INCORRECT
+    auto compare = [](auto custom, auto out) {return std::abs(std::complex{out[0], out[1]} - std::complex{custom[0], custom[1]}) < 1E-6;};
+#else
+    auto compare = [ulp_tolerance](auto custom, auto out) {return compare_complex(custom, out, ulp_tolerance);};
+#endif //TEST_INCORRECT
+    auto off = std::mismatch(&out[0], &out[n], &custom_output[0], compare).first - &out[0];
+    bool correct = off == n;
+    if (!correct) {
+    	std::cout << "Test '" << test_name << "' failed at index " << off << ": "
+	    << std::complex{out[off][0], out[off][1]} << " != " << std::complex{custom_output[off][0], custom_output[off][1]}
+	    << ", ERROR: (" << abs_error_ulps(out[off][0], custom_output[off][0]) << ", " << abs_error_ulps(out[off][1], custom_output[off][1]) << ") ulp;\n";
     }
 
     fftw_destroy_plan(p);

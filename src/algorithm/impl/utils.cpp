@@ -27,14 +27,10 @@ unsigned char reverse_bits[] = {
 constexpr double c4 = std::cos(std::numbers::pi_v<double> / 4.0);
 
 uint32_t bit_reverse32(const uint32_t i) {
-    return reverse_bits[i & 0xff] << 56 |
-           reverse_bits[i >> 8 & 0xff] << 48 |
-           reverse_bits[i >> 16 & 0xff] << 40 |
-           reverse_bits[i >> 24 & 0xff] << 32 |
-           reverse_bits[i >> 32 & 0xff] << 24 |
-           reverse_bits[i >> 40 & 0xff] << 16 |
-           reverse_bits[i >> 48 & 0xff] << 8 |
-           reverse_bits[i >> 56 & 0xff];
+    return reverse_bits[i & 0xff] << 24 |
+           reverse_bits[i >> 8 & 0xff] << 16 |
+           reverse_bits[i >> 16 & 0xff] << 8 |
+           reverse_bits[i >> 24 & 0xff];
 }
 
 uint64_t bit_reverse64(const uint64_t i) {
@@ -98,6 +94,8 @@ void bit_shuffle(const size_t n, const ft_complex *in, ft_complex *out) {
 void bit_shuffle_multithreaded(const size_t n, const ft_complex *in, ft_complex *out) {
     const size_t shift = 64 - std::countr_zero(n);
 
+    /* Зачем OpenMP и потоки C++? Почему только для малых n?
+     * */
     if (n <= 32768) {
 #pragma omp parallel for
         for (size_t i = 0; i < n; ++i) {
@@ -107,7 +105,7 @@ void bit_shuffle_multithreaded(const size_t n, const ft_complex *in, ft_complex 
     }
 
     const size_t thread_count = std::thread::hardware_concurrency();
-    const size_t batch_size = std::llround(n / thread_count);
+    const size_t batch_size = std::llround(n / thread_count); //Частное типа size_t, уже округлено. И распределять нагрузку я вас не так учил. Распределяйте частное и модуль. Когда индексы считаете, используйте только целочисленную логику и Эвклидово деление.
     std::vector<std::thread> threads;
 
     auto shuffle = [&](const size_t t) {

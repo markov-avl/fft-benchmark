@@ -133,6 +133,16 @@ void fft_of_2(ft_complex *data) {
     ft_sub(t, data[1], data[1]);
 }
 
+#include <emmintrin.h>
+void fft_of_2_sse(ft_complex *data) {
+	__m128d t1 = _mm_loadu_pd(&data[0][0]);
+	__m128d t2 = _mm_loadu_pd(&data[1][0]);
+	__m128d sum = _mm_add_pd(t1, t2);
+	_mm_storeu_pd(&data[0][0], sum);
+	__m128d dif = _mm_sub_pd(t1, t2);
+	_mm_storeu_pd(&data[1][0], dif);
+}
+
 void fft_of_4(ft_complex *data) {
     fft_of_2(data);
     fft_of_2(data + 2);
@@ -166,7 +176,8 @@ void fft_of_8(ft_complex *data) {
 void transform(const size_t half, ft_complex *data) {
 	switch (half) {
 		case 1: {
-			fft_of_2(data);
+			//fft_of_2(data);
+			fft_of_2_sse(data);
 			break;
 		}
 		default:

@@ -1,9 +1,10 @@
-#include <utility>
 #include "CompositeOutputCollector.h"
 
+#include <utility>
 
-CompositeOutputCollector::CompositeOutputCollector(std::vector<std::shared_ptr<IOutputCollector> > collectors)
-    : collectors(std::move(collectors)) {
+
+CompositeOutputCollector::CompositeOutputCollector(const std::vector<std::shared_ptr<IOutputCollector> > &collectors)
+    : collectors(collectors) {
 }
 
 void CompositeOutputCollector::add(const std::string &value) {
@@ -12,9 +13,9 @@ void CompositeOutputCollector::add(const std::string &value) {
     }
 }
 
-void CompositeOutputCollector::add(const double value) {
+void CompositeOutputCollector::add(const double value, const int precision) {
     for (const auto &collector: collectors) {
-        collector->add(value);
+        collector->add(value, precision);
     }
 }
 

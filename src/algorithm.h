@@ -1,16 +1,33 @@
-#ifndef ALGORITHM_H
-#define ALGORITHM_H
+#pragma once
 
+#include <map>
+#include <memory>
+#include <ranges>
 
 #include "algorithm/IFourierTransformAlgorithm.h"
-#include "algorithm/impl/utils.h"
 #include "algorithm/impl/dft/DFT.h"
-#include "algorithm/impl/fft/radix2/IterativeRadix2FFT.h"
-#include "algorithm/impl/fft/radix2/RecursiveRadix2FFT.h"
-#include "algorithm/impl/fft/radix2/RecursiveSteppedRadix2FFT.h"
-#include "algorithm/impl/fft/radix2/RecursiveThreadedBarrierRadix2FFT.h"
-#include "algorithm/impl/fft/radix2/RecursiveThreadedRadix2FFT.h"
+#include "algorithm/impl/fft/radix2/CooleyTukey_I_BRP_R2.h"
+#include "algorithm/impl/fft/radix2/CooleyTukey_R_BRP_Barrier_R2.h"
+#include "algorithm/impl/fft/radix2/CooleyTukey_R_BRP_R2.h"
+#include "algorithm/impl/fft/radix2/CooleyTukey_R_InPlace_R2.h"
+#include "algorithm/impl/fft/radix2/CooleyTukey_R_R2.h"
 #include "algorithm/impl/fftw/FFTWEstimate.h"
 
 
-#endif
+static const std::map<std::string, std::shared_ptr<IFourierTransformAlgorithm> > ALGORITHMS = {
+    {DFT::NAME, std::make_shared<DFT>()},
+    {CooleyTukey_I_BRP_R2::NAME, std::make_shared<CooleyTukey_I_BRP_R2>()},
+    {CooleyTukey_R_BRP_Barrier_R2::NAME, std::make_shared<CooleyTukey_R_BRP_Barrier_R2>()},
+    {CooleyTukey_R_BRP_R2::NAME, std::make_shared<CooleyTukey_R_BRP_R2>()},
+    {CooleyTukey_R_InPlace_R2::NAME, std::make_shared<CooleyTukey_R_InPlace_R2>()},
+    {CooleyTukey_R_R2::NAME, std::make_shared<CooleyTukey_R_R2>()},
+    {FFTWEstimate::NAME, std::make_shared<FFTWEstimate>()}
+};
+
+inline std::vector<std::string> supported_algorithms() {
+    std::vector<std::string> algorithm_names;
+    for (const auto &name: ALGORITHMS | std::views::keys) {
+        algorithm_names.emplace_back(name);
+    }
+    return algorithm_names;
+}

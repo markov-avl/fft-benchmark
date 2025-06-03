@@ -1,11 +1,6 @@
-#ifndef OUTPUT_H
-#define OUTPUT_H
+#pragma once
 
-
-#include "output/IOutputCollector.h"
 #include "output/CompositeOutputCollector.h"
 #include "output/CsvOutputCollector.h"
+#include "output/IOutputCollector.h"
 #include "output/StdOutputCollector.h"
-
-
-#endif

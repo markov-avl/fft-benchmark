@@ -1,5 +1,4 @@
-#ifndef MEASURER_H
-#define MEASURER_H
+#pragma once
 
 
 class IMeasurer {
@@ -12,6 +11,3 @@ public:
 
     virtual double result() = 0;
 };
-
-
-#endif

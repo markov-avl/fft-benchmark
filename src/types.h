@@ -1,8 +1,4 @@
-#ifndef TYPES_H
-#define TYPES_H
+#pragma once
 
 
 using ft_complex = double[2];
-
-
-#endif

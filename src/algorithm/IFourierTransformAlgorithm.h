@@ -8,6 +8,8 @@ class IFourierTransformAlgorithm {
 public:
     virtual ~IFourierTransformAlgorithm() = default;
 
+    [[nodiscard]] virtual int supported_sequences() const = 0;
+
     void run(size_t n, ft_complex *in, ft_complex *out);
 
     void run(size_t n, ft_complex *in, ft_complex *out, IMeasurer *measurer);

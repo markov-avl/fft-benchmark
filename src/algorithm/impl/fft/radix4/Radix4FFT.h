@@ -4,10 +4,10 @@
 #include "algorithm/SupportedSequences.h"
 
 
-class Radix2FFT : public IFourierTransformAlgorithm {
+class Radix4FFT : public IFourierTransformAlgorithm {
 public:
     [[nodiscard]] int supported_sequences() const override {
-        return BASE_OF_2;
+        return BASE_OF_4;
     }
 
 protected:

@@ -1,7 +1,9 @@
 #include "Stockham_R_R2.h"
 
 #include <cmath>
+#include <thread>
 
+#include "multiprocessing.h"
 #include "algorithm/utils/operation.h"
 
 
@@ -18,19 +20,44 @@ static void fft(const size_t n, const size_t s, const size_t q, const bool eo, f
         const size_t half = n / 2;
         const double theta = std::numbers::pi / static_cast<double>(half);
 
-        for (size_t p = 0; p < half; ++p) {
-            const double angle = static_cast<double>(p) * theta;
-            ft_complex a, b, w = {std::cos(angle), -std::sin(angle)};
+        const size_t max_threads = get_max_threads();
+        const size_t thread_count = std::min(half, max_threads);
+        const size_t chunk = half / thread_count;
 
-            ft_copy(x[q + s * p], a);
-            ft_copy(x[q + s * (p + half)], b);
-            ft_add(a, b, y[q + s * (2 * p)]);
-            ft_sub(a, b, y[q + s * (2 * p + 1)]);
-            ft_mul(y[q + s * (2 * p + 1)], w);
+        auto task = [&](const size_t p_start, const size_t p_end) {
+            for (size_t p = p_start; p < p_end; ++p) {
+                const double angle = static_cast<double>(p) * theta;
+                ft_complex a, b, w = {std::cos(angle), -std::sin(angle)};
+
+                ft_copy(x[q + s * p], a);
+                ft_copy(x[q + s * (p + half)], b);
+                ft_add(a, b, y[q + s * (2 * p)]);
+                ft_sub(a, b, y[q + s * (2 * p + 1)]);
+                ft_mul(y[q + s * (2 * p + 1)], w);
+            }
+        };
+
+        std::vector<std::thread> threads;
+
+        for (size_t t = 1; t < thread_count; ++t) {
+            const size_t p_start = t * chunk;
+            const size_t p_end = t == thread_count - 1 ? half : (t + 1) * chunk;
+            threads.emplace_back(task, p_start, p_end);
+        }
+        task(0, chunk);
+
+        for (auto &thread: threads) {
+            thread.join();
         }
 
-        fft(half, 2 * s, q, !eo, y, x);
-        fft(half, 2 * s, q + s, !eo, y, x);
+        if (max_threads > 1 && n >= 4) {
+            std::thread t1(fft, half, 2 * s, q, !eo, y, x);
+            fft(half, 2 * s, q + s, !eo, y, x);
+            t1.join();
+        } else {
+            fft(half, 2 * s, q, !eo, y, x);
+            fft(half, 2 * s, q + s, !eo, y, x);
+        }
     }
 }
 

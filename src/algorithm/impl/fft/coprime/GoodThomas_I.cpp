@@ -1,9 +1,10 @@
 #include "GoodThomas_I.h"
 
 #include <cmath>
-#include <iostream>
 #include <numeric>
+#include <thread>
 
+#include "multiprocessing.h"
 #include "algorithm/utils/operation.h"
 
 
@@ -58,9 +59,31 @@ static void fft(const size_t n, const size_t n1, const size_t n2, const ft_compl
         }
     }
 
-    for (size_t k1 = 0; k1 < n1; ++k1) {
+    const size_t max_threads = get_max_threads();
+    size_t threads_count = std::min(n1, max_threads);
+    size_t chunk_size = n1 / threads_count;
+
+    std::vector<std::thread> threads;
+
+    for (size_t t = 1; t < threads_count; ++t) {
+        threads.emplace_back([=] {
+            const size_t start = t * chunk_size;
+            const size_t end = t == threads_count - 1 ? n1 : (t + 1) * chunk_size;
+            for (size_t k1 = start; k1 < end; ++k1) {
+                dft(n2, out + k1 * n2);
+            }
+        });
+    }
+
+    for (size_t k1 = 0; k1 < chunk_size; ++k1) {
         dft(n2, out + k1 * n2);
     }
+
+    for (auto &thread: threads) {
+        thread.join();
+    }
+    threads.clear();
+
     for (size_t k1 = 0; k1 < n1; ++k1) {
         for (size_t k2 = 0; k2 < n2; ++k2) {
             ft_complex w;
@@ -68,8 +91,26 @@ static void fft(const size_t n, const size_t n1, const size_t n2, const ft_compl
             ft_mul(w, out[k1 * n2 + k2], transposed[k2 * n1 + k1]);
         }
     }
-    for (size_t k2 = 0; k2 < n2; ++k2) {
+
+    threads_count = std::min(n2, max_threads);
+    chunk_size = n2 / threads_count;
+
+    for (size_t t = 1; t < threads_count; ++t) {
+        threads.emplace_back([=]() {
+            const size_t start = t * chunk_size;
+            const size_t end = t == threads_count - 1 ? n2 : (t + 1) * chunk_size;
+            for (size_t k2 = start; k2 < end; ++k2) {
+                dft(n1, transposed + k2 * n1);
+            }
+        });
+    }
+
+    for (size_t k2 = 0; k2 < chunk_size; ++k2) {
         dft(n1, transposed + k2 * n1);
+    }
+
+    for (auto &thread: threads) {
+        thread.join();
     }
 
     for (size_t k1 = 0; k1 < n1; ++k1) {

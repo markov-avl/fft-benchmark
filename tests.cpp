@@ -81,7 +81,7 @@ std::string test_with_fftw(const size_t n, ft_complex *in, IFourierTransformAlgo
     return result;
 }
 
-std::string run_comparison(IFourierTransformAlgorithm *algorithm, IInputGenerator *generator) {
+size_t get_testing_sequence_size(const IFourierTransformAlgorithm *algorithm) {
     size_t n;
     if (algorithm->supported_sequences() == ANY) {
         n = 1000;
@@ -105,17 +105,21 @@ std::string run_comparison(IFourierTransformAlgorithm *algorithm, IInputGenerato
         }
     }
 
+    return n;
+}
+
+std::string run_comparison(IFourierTransformAlgorithm *algorithm, IInputGenerator *generator, const size_t n) {
     const auto input = new ft_complex[n];
     generator->fill(input, n);
 
     const std::string result = test_with_fftw(n, input, algorithm);
     delete[] input;
 
-    return result + " (" + std::to_string(n) + ")";
+    return result;
 }
 
 int main() {
-    StdOutputCollector output(15, true);
+    StdOutputCollector output(22, true);
 
     output.add("Algorithm");
     for (const auto &generator: supported_generators()) {
@@ -124,9 +128,10 @@ int main() {
     output.newline();
 
     for (const auto &[name, algorithm]: ALGORITHMS) {
-        output.add(name);
+        const size_t N = get_testing_sequence_size(algorithm.get());
+        output.add(name + " (N=" + std::to_string(N) + ")");
         for (const auto &generator: GENERATORS | std::views::values) {
-            output.add(run_comparison(algorithm.get(), generator.get()));
+            output.add(run_comparison(algorithm.get(), generator.get(), N));
         }
         output.newline();
     }

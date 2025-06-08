@@ -24,10 +24,10 @@ sudo cmake-build-debug/Main \
 sudo cmake-build-debug/Main \
   --algorithms FFTW-E S-I-2 \
   --sizes 4194304 8388608 16777216 33554432 67108864 \
-  --measurer intel-cpu-power \
+  --measurer timer \
   --generator random \
   --output output/2.csv \
-  --runs 5 \
+  --runs 1 \
   --threads 16
 ```
 
@@ -44,22 +44,22 @@ sudo cmake-build-debug/Main \
 
 ```bash
 sudo cmake-build-debug/Main \
-  --algorithms FFTW-E CT-R-2 S-R-2 \
+  --algorithms FFTW-E CT-I+BRP-2 S-I-2 S-I-4 \
   --sizes 4194304 \
   --measurer timer \
   --generator random \
   --output output/2.csv \
   --runs 1 \
-  --threads 1
+  --threads 2
 ```
 
 ```bash
 sudo cmake-build-debug/Main \
-  --algorithms FFTW-E DFT GT-I \
-  --sizes 54522 \
+  --algorithms FFTW-E GT-I \
+  --sizes 1045506 \
   --measurer timer \
   --generator random \
   --output output/2.csv \
   --runs 1 \
-  --threads 1
+  --threads 16
 ```

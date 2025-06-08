@@ -29,7 +29,7 @@ static void fft(const size_t n,
 
     ft_complex t;
     for (size_t k = 0; k < half; ++k) {
-        ft_polar(-std::numbers::pi_v<double> * static_cast<double>(k) / static_cast<double>(half), t);
+        ft_polar(-std::numbers::pi * static_cast<double>(k) / static_cast<double>(half), t);
         ft_mul(t, out[half + k]);
         ft_sub(out[k], t, out[half + k]);
         ft_add(out[k], t);

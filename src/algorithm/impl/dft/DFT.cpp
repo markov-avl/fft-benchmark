@@ -7,7 +7,7 @@
 
 void precompute_twiddles(const size_t n, ft_complex *twiddles) {
     for (size_t t = 0; t < n; ++t) {
-        ft_polar(-2.0 * std::numbers::pi_v<double> * static_cast<double>(t) / static_cast<double>(n), twiddles[t]);
+        ft_polar(-2.0 * std::numbers::pi * static_cast<double>(t) / static_cast<double>(n), twiddles[t]);
     }
 }
 

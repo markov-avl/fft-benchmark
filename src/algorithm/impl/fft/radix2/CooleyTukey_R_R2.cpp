@@ -34,7 +34,7 @@ static void fft(const size_t n, const ft_complex *in, ft_complex *out, const siz
 
     ft_complex t;
     for (size_t k = 0; k < half; ++k) {
-        ft_polar(-std::numbers::pi_v<double> * static_cast<double>(k) / static_cast<double>(half), t);
+        ft_polar(-std::numbers::pi * static_cast<double>(k) / static_cast<double>(half), t);
         ft_mul(t, odd_out[k]);
         ft_add(even_out[k], t, out[k]);
         ft_sub(even_out[k], t, out[k + half]);

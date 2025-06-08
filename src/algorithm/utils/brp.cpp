@@ -48,20 +48,10 @@ static uint64_t bit_reverse64(const uint64_t i) {
 
 void bit_reversal_permutation(const size_t n, const ft_complex *in, ft_complex *out) {
     const size_t shift = 64 - std::countr_zero(n);
-
-    // FIXME: Зачем OpenMP и потоки C++? Почему только для малых n?
-    if (n <= 32768) {
-#pragma omp parallel for
-        for (size_t i = 0; i < n; ++i) {
-            ft_copy(in[i], out[bit_reverse64(i) >> shift]);
-        }
-        return;
-    }
-
     const size_t thread_count = get_max_threads();
     const size_t batch_size = n / thread_count;
     const size_t remainder = n % thread_count;
-    std::vector<std::thread> threads(thread_count - 1);
+    std::vector<std::thread> threads;
 
     auto permutate = [&](const size_t t) {
         const size_t start = t * batch_size + std::min(t, remainder);

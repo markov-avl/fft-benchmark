@@ -22,11 +22,33 @@ sudo cmake-build-debug/Main \
 
 ```bash
 sudo cmake-build-debug/Main \
-  --algorithms FFTW-E FFT-R+T-2 FFT-RB+T-2 \
+  --algorithms FFTW-E S-I-2 \
   --sizes 4194304 8388608 16777216 33554432 67108864 \
   --measurer intel-cpu-power \
   --generator random \
   --output output/2.csv \
   --runs 5 \
   --threads 16
+```
+
+```bash
+sudo cmake-build-debug/Main \
+  --algorithms FFTW-E CT-I+BRP-2 CT-R+BRP-2 \
+  --sizes 4194304 \
+  --measurer timer \
+  --generator random \
+  --output output/2.csv \
+  --runs 5 \
+  --threads 2
+```
+
+```bash
+sudo cmake-build-debug/Main \
+  --algorithms FFTW-E CT-R-2 S-R-2 \
+  --sizes 4194304 \
+  --measurer timer \
+  --generator random \
+  --output output/2.csv \
+  --runs 1 \
+  --threads 1
 ```

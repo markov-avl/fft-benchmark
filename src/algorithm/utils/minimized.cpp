@@ -7,7 +7,7 @@
 #include "operation.h"
 
 
-static constexpr double c4 = std::cos(std::numbers::pi_v<double> / 4.0);
+static constexpr double c4 = std::cos(std::numbers::pi / 4.0);
 
 
 void fft_of_2_sse(ft_complex *data) {

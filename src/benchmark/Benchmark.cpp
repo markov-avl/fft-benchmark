@@ -7,6 +7,7 @@
 #include "generation.h"
 #include "multiprocessing.h"
 #include "output.h"
+#include "algorithm/utils/operation.h"
 
 
 Benchmark::Benchmark(const std::vector<std::string> &algorithms,
@@ -37,16 +38,21 @@ void Benchmark::run(const std::string &output_file, const size_t threads) const 
     collector->newline();
 
     for (const auto size: sizes) {
-        auto *in = static_cast<ft_complex *>(malloc(sizeof(ft_complex) * size));
+        auto *in = new ft_complex[size];
+        auto *in_copy = new ft_complex[size];
         generator->fill(in, size);
 
         collector->add(std::to_string(size));
         for (auto &algorithm: algorithms) {
-            Experiment experiment(ALGORITHMS.at(algorithm), measurer, runs, size, in);
+            for (size_t i = 0; i < size; ++i) {
+                ft_copy(in[i], in_copy[i]);
+            }
+
+            Experiment experiment(ALGORITHMS.at(algorithm), measurer, runs, size, in_copy);
             collector->add(experiment.run());
         }
 
-        free(in);
+        delete[] in;
         collector->newline();
     }
 }

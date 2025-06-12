@@ -1,6 +1,7 @@
 #include "GoodThomas_I.h"
 
 #include <cmath>
+#include <future>
 #include <numeric>
 #include <thread>
 
@@ -8,26 +9,14 @@
 #include "algorithm/utils/operation.h"
 
 
-size_t find_optimal_factor(const size_t n) {
-    size_t n1 = 1;
-    size_t min_max = n;
-
-    for (size_t N1 = 2; static_cast<double>(N1) <= std::sqrt(n); ++N1) {
-        if (n % N1 != 0) {
-            continue;
-        }
-        size_t N2 = n / N1;
-        if (std::gcd(N1, N2) != 1) {
-            continue;
-        }
-
-        if (const size_t max_len = std::max(N1, N2); max_len < min_max) {
-            min_max = max_len;
-            n1 = N1;
+static size_t find_optimal_coprime(const size_t n) {
+    for (auto N1 = static_cast<size_t>(std::sqrt(n)); N1 > 1; --N1) {
+        if (n % N1 == 0 && std::gcd(N1, n / N1) == 1) {
+            return N1;
         }
     }
 
-    return n1;
+    return 1;
 }
 
 static void dft(const size_t n, ft_complex *data) {
@@ -123,6 +112,6 @@ static void fft(const size_t n, const size_t n1, const size_t n2, const ft_compl
 }
 
 void GoodThomas_I::forward(const size_t n, ft_complex *in, ft_complex *out) {
-    const size_t n1 = find_optimal_factor(n);
+    const size_t n1 = find_optimal_coprime(n);
     fft(n, n1, n / n1, in, out);
 }

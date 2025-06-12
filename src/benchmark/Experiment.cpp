@@ -17,12 +17,12 @@ double Experiment::run() const {
     std::vector<double> results;
 
     for (size_t r = 0; r < runs; ++r) {
-        auto *out = static_cast<ft_complex *>(malloc(sizeof(ft_complex) * n));
+        auto *out = new ft_complex[n];
 
         algorithm->run(n, in, out, measurer.get());
         results.push_back(measurer->result());
 
-        free(out);
+        delete[] out;
     }
 
     if (runs > 2) {

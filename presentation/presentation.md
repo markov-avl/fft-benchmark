@@ -13,15 +13,17 @@ style: |
         text-align: center;
         color: #888;
     }
+    img[alt~="center"] {
+      display: block;
+      margin: 0 auto;
+    }
 _class: lead
 ---
 
 <!-- _paginate: false -->
-<!-- _footer: Владивосток 2025 -->
+<!-- _footer: Владивосток\n2025 -->
 
-<p align="center">
-  <img src="fefu-logo.jpg" alt="FEFU logo" height="150"/>
-</p>
+![height:150](fefu-logo.jpg)
 
 # Исследование алгоритмов БПФ и их параллельных форм
 
@@ -66,13 +68,6 @@ _class: lead
 <!-- _footer: Задача 1. Обзор алгоритмов БПФ и существующих библиотек -->
 
 # Принцип работы ДПФ
-
-<style>
-img[alt~="center"] {
-  display: block;
-  margin: 0 auto;
-}
-</style>
 
 ![center height:300px](1.jpg)
 

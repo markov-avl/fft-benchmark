@@ -1,11 +1,7 @@
-#include <stdexcept>
-#include <utility>
 #include "IFourierTransformAlgorithm.h"
 
+#include <stdexcept>
 
-IFourierTransformAlgorithm::IFourierTransformAlgorithm(std::string name) {
-    this->name = std::move(name);
-}
 
 void IFourierTransformAlgorithm::run(const size_t n, ft_complex *in, ft_complex *out) {
     check_preconditions(n, in, out);
@@ -23,11 +19,6 @@ void IFourierTransformAlgorithm::run(const size_t n, ft_complex *in, ft_complex 
     measurer->stop();
 
     finalize(n, in, out);
-}
-
-
-const std::string &IFourierTransformAlgorithm::id() const {
-    return this->name;
 }
 
 void IFourierTransformAlgorithm::check_preconditions(const size_t n, ft_complex *in, ft_complex *out) {

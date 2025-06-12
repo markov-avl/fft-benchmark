@@ -1,22 +1,25 @@
-#ifndef STDOUTPUTCOLLECTOR_H
-#define STDOUTPUTCOLLECTOR_H
+#pragma once
+
+#include <iomanip>
+
 #include "IOutputCollector.h"
 
 
 class StdOutputCollector final : public IOutputCollector {
-    std::size_t num_columns;
-    int column_width;
+    int current_column = 0;
+    int column_width = 15;
     bool header = false;
 
+    void print_delimiter() const;
+
+    void apply_format() const;
+
 public:
-    StdOutputCollector(std::size_t num_columns, int column_width, bool header);
+    explicit StdOutputCollector(int column_width = 15, bool header = false);
 
     void add(const std::string &value) override;
 
-    void add(double value) override;
+    void add(double value, int precision) override;
 
     void newline() override;
 };
-
-
-#endif

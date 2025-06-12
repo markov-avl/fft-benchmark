@@ -1,3 +1,13 @@
-/cmake-build-debug
-/output
 /.idea
+/.vscode
+
+/cmake-build-debug
+CMakeCache.txt
+CMakeFiles/*
+Makefile
+cmake_install.cmake
+*.swp
+
+/output
+/presentation/presentation.html
+/presentation/presentation.pdf

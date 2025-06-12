@@ -1,16 +1,15 @@
-#ifndef RADIX2FFT_H
-#define RADIX2FFT_H
+#pragma once
+
 #include "algorithm/IFourierTransformAlgorithm.h"
+#include "algorithm/SupportedSequences.h"
 
 
 class Radix2FFT : public IFourierTransformAlgorithm {
 public:
-    explicit Radix2FFT(const std::string &name) : IFourierTransformAlgorithm(name) {
+    [[nodiscard]] int supported_sequences() const override {
+        return BASE_OF_2;
     }
 
 protected:
     void check_preconditions(size_t n, ft_complex *in, ft_complex *out) override;
 };
-
-
-#endif

@@ -1,19 +1,25 @@
-#include <iomanip>
-#include <iostream>
 #include "StdOutputCollector.h"
 
+#include <iomanip>
+#include <iostream>
 
-StdOutputCollector::StdOutputCollector(const std::size_t num_columns, const int column_width, const bool header)
-    : num_columns(num_columns), column_width(column_width), header(header) {
+
+StdOutputCollector::StdOutputCollector(const int column_width, const bool header)
+    : column_width(column_width), header(header) {
 }
 
 void StdOutputCollector::add(const std::string &value) {
-    std::cout << std::left << std::setw(column_width) << value << " | " << std::flush;
+    print_delimiter();
+    apply_format();
+    std::cout << value << std::flush;
+    ++current_column;
 }
 
-void StdOutputCollector::add(const double value) {
-    std::cout << std::left << std::setw(column_width) << std::fixed << std::setprecision(10) << value << " | " <<
-            std::flush;
+void StdOutputCollector::add(const double value, const int precision) {
+    print_delimiter();
+    apply_format();
+    std::cout << std::fixed << std::setprecision(precision) << value << std::flush;
+    ++current_column;
 }
 
 void StdOutputCollector::newline() {
@@ -21,9 +27,24 @@ void StdOutputCollector::newline() {
 
     if (header) {
         header = false;
-        for (std::size_t i = 0; i < num_columns; ++i) {
-            std::cout << std::string(column_width, '-') << "-+-";
+        if (current_column > 0) {
+            std::cout << std::string(column_width, '-');
+        }
+        for (std::size_t i = 1; i < current_column; ++i) {
+            std::cout << "-+-" << std::string(column_width, '-');
         }
         std::cout << std::endl;
     }
+
+    current_column = 0;
+}
+
+void StdOutputCollector::print_delimiter() const {
+    if (current_column > 0) {
+        std::cout << " | ";
+    }
+}
+
+void StdOutputCollector::apply_format() const {
+    std::cout << std::left << std::setw(column_width);
 }

@@ -1,8 +1,4 @@
-#ifndef BENCHMARK_H
-#define BENCHMARK_H
+#pragma once
 
-
-#include "benchmark/experiment.h"
-
-
-#endif
+#include "benchmark/Benchmark.h"
+#include "benchmark/Experiment.h"

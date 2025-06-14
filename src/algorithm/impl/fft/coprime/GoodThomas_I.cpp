@@ -44,10 +44,6 @@ static void dft(const size_t n, ft_complex *data) {
 static void fft(const size_t n, const size_t n1, const size_t n2, const ft_complex *in, ft_complex *out) {
     auto *transposed = new ft_complex[n];
 
-    for (size_t k = 0; k < n; ++k) {
-        ft_copy(in[n1 * k % n2], out[k]);
-    }
-
     for (size_t k1 = 0; k1 < n1; ++k1) {
         for (size_t k2 = 0; k2 < n2; ++k2) {
             ft_copy(in[n1 * k2 + k1], out[k1 * n2 + k2]);

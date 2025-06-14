@@ -6,12 +6,13 @@
 
 #include "algorithm/IFourierTransformAlgorithm.h"
 #include "algorithm/impl/dft/DFT.h"
-#include "algorithm/impl/fft/radix2/CooleyTukey_I_BRP_R2.h"
+#include "algorithm/impl/fft/coprime/GoodThomas_I.h"
+#include "algorithm/impl/fft/radix2/CooleyTukey_I_Barrier_BRP_Stride_R2.h"
+#include "algorithm/impl/fft/radix2/CooleyTukey_I_BRP_Stride_R2.h"
 #include "algorithm/impl/fft/radix2/CooleyTukey_R_BRP_Barrier_R2.h"
 #include "algorithm/impl/fft/radix2/CooleyTukey_R_BRP_R2.h"
-#include "algorithm/impl/fft/radix2/CooleyTukey_R_InPlace_R2.h"
 #include "algorithm/impl/fft/radix2/CooleyTukey_R_R2.h"
-#include "algorithm/impl/fft/coprime/GoodThomas_I.h"
+#include "algorithm/impl/fft/radix2/CooleyTukey_R_Stride_R2.h"
 #include "algorithm/impl/fft/radix2/Stockham_I_R2.h"
 #include "algorithm/impl/fft/radix2/Stockham_R_R2.h"
 #include "algorithm/impl/fft/radix4/Stockham_I_R4.h"
@@ -20,12 +21,13 @@
 
 static const std::map<std::string, std::shared_ptr<IFourierTransformAlgorithm> > ALGORITHMS = {
     {DFT::NAME, std::make_shared<DFT>()},
-    {CooleyTukey_I_BRP_R2::NAME, std::make_shared<CooleyTukey_I_BRP_R2>()},
+    {GoodThomas_I::NAME, std::make_shared<GoodThomas_I>()},
+    {CooleyTukey_I_Barrier_BRP_Stride_R2::NAME, std::make_shared<CooleyTukey_I_Barrier_BRP_Stride_R2>()},
+    {CooleyTukey_I_BRP_Stride_R2::NAME, std::make_shared<CooleyTukey_I_BRP_Stride_R2>()},
     {CooleyTukey_R_BRP_Barrier_R2::NAME, std::make_shared<CooleyTukey_R_BRP_Barrier_R2>()},
     {CooleyTukey_R_BRP_R2::NAME, std::make_shared<CooleyTukey_R_BRP_R2>()},
-    {CooleyTukey_R_InPlace_R2::NAME, std::make_shared<CooleyTukey_R_InPlace_R2>()},
     {CooleyTukey_R_R2::NAME, std::make_shared<CooleyTukey_R_R2>()},
-    {GoodThomas_I::NAME, std::make_shared<GoodThomas_I>()},
+    {CooleyTukey_R_Stride_R2::NAME, std::make_shared<CooleyTukey_R_Stride_R2>()},
     {Stockham_I_R2::NAME, std::make_shared<Stockham_I_R2>()},
     {Stockham_R_R2::NAME, std::make_shared<Stockham_R_R2>()},
     {Stockham_I_R4::NAME, std::make_shared<Stockham_I_R4>()},

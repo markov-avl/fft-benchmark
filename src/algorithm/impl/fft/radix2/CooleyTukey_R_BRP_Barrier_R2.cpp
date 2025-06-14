@@ -9,8 +9,8 @@
 
 
 static void transform(const size_t half, ft_complex *data, const size_t from, const size_t to) {
-    ft_complex t;
     for (size_t k = from; k < to; ++k) {
+        ft_complex t;
         ft_polar(-std::numbers::pi * static_cast<double>(k) / static_cast<double>(half), t);
         ft_mul(t, data[half + k]);
         ft_sub(data[k], t, data[half + k]);

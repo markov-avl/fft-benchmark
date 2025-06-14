@@ -1,4 +1,4 @@
-#include "CooleyTukey_R_InPlace_R2.h"
+#include "CooleyTukey_R_Stride_R2.h"
 
 #include <thread>
 
@@ -19,16 +19,16 @@ static void fft(const size_t n,
     const size_t half = n / 2;
 
     if (thread_count > 1) {
-        std::thread t(fft, half, in + step, out + half, step * 2, thread_count / 2);
-        fft(half, in, out, step * 2, thread_count / 2);
+        std::thread t(fft, half, in + step, out + half, step << 1, thread_count / 2);
+        fft(half, in, out, step << 1, thread_count / 2);
         t.join();
     } else {
-        fft(half, in, out, step * 2);
-        fft(half, in + step, out + half, step * 2);
+        fft(half, in, out, step << 1);
+        fft(half, in + step, out + half, step << 1);
     }
 
-    ft_complex t;
     for (size_t k = 0; k < half; ++k) {
+        ft_complex t;
         ft_polar(-std::numbers::pi * static_cast<double>(k) / static_cast<double>(half), t);
         ft_mul(t, out[half + k]);
         ft_sub(out[k], t, out[half + k]);
@@ -37,6 +37,6 @@ static void fft(const size_t n,
 }
 
 
-void CooleyTukey_R_InPlace_R2::forward(const size_t n, ft_complex *in, ft_complex *out) {
+void CooleyTukey_R_Stride_R2::forward(const size_t n, ft_complex *in, ft_complex *out) {
     fft(n, in, out, 1, get_max_threads());
 }

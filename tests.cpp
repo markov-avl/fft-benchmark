@@ -119,7 +119,7 @@ std::string run_comparison(IFourierTransformAlgorithm *algorithm, IInputGenerato
 }
 
 int main() {
-    StdOutputCollector output(22, true);
+    StdOutputCollector output(25, true);
 
     output.add("Algorithm");
     for (const auto &generator: supported_generators()) {

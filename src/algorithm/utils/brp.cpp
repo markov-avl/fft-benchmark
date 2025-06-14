@@ -70,3 +70,29 @@ void bit_reversal_permutation(const size_t n, const ft_complex *in, ft_complex *
         t.join();
     }
 }
+
+
+void bit_reversal_permutation(const size_t n, ft_complex *data) {
+    const size_t shift = 64 - std::countr_zero(n);
+    const size_t thread_count = get_max_threads();
+    const size_t batch_size = n / thread_count;
+    const size_t remainder = n % thread_count;
+    std::vector<std::thread> threads;
+
+    auto permutate = [&](const size_t t) {
+        const size_t start = t * batch_size + std::min(t, remainder);
+        const size_t end = start + batch_size + (t < remainder ? 1 : 0);
+        for (size_t i = start; i < std::min(end, n); ++i) {
+            std::swap(data[i], data[bit_reverse64(i) >> shift]);
+        }
+    };
+
+    for (size_t i = 1; i < thread_count; ++i) {
+        threads.emplace_back(permutate, i);
+    }
+    permutate(0);
+
+    for (auto &t: threads) {
+        t.join();
+    }
+}

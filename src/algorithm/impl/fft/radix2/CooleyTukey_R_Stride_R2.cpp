@@ -12,7 +12,7 @@ static void fft(const size_t n,
                 const size_t step = 1,
                 const size_t thread_count = 1) {
     if (n == 1) {
-        ft_copy(in[0], out[0]);
+        FT_COPY(in[0], out[0]);
         return;
     }
 
@@ -29,10 +29,10 @@ static void fft(const size_t n,
 
     for (size_t k = 0; k < half; ++k) {
         ft_complex t;
-        ft_polar(-std::numbers::pi * static_cast<double>(k) / static_cast<double>(half), t);
-        ft_mul(t, out[half + k]);
-        ft_sub(out[k], t, out[half + k]);
-        ft_add(out[k], t);
+        FT_POLAR(-std::numbers::pi * static_cast<double>(k) / static_cast<double>(half), t);
+        FT_RMUL(t, out[half + k]);
+        FT_SUB(out[k], t, out[half + k]);
+        FT_RADD(out[k], t);
     }
 }
 

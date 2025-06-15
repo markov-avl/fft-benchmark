@@ -7,27 +7,25 @@
 #include "algorithm/utils/operation.h"
 
 
-static void fft(const size_t n, const size_t s, const bool eo, ft_complex *x, ft_complex *y) {
-    const size_t half = n / 2;
-    const double theta = std::numbers::pi / static_cast<double>(half);
-
+static void fft(const size_t n,
+                const size_t s,
+                const bool eo,
+                ft_complex *x,
+                ft_complex *y,
+                const size_t thread_count = 1) {
     if (n == 2) {
         ft_complex *z = eo ? y : x;
 
         for (size_t q = 0; q < s; ++q) {
             ft_complex a, b;
-            ft_copy(x[q], a);
-            ft_copy(x[q + s], b);
-            ft_add(a, b, z[q]);
-            ft_sub(a, b, z[q + s]);
-            // FT_COPY(x[q], a);
-            // FT_COPY(x[q + s], b);
-            // FT_ADD(a, b, z[q]);
-            // FT_SUB(a, b, z[q + s]);
+            FT_COPY(x[q], a);
+            FT_COPY(x[q + s], b);
+            FT_ADD(a, b, z[q]);
+            FT_SUB(a, b, z[q + s]);
         }
     } else if (n > 2) {
-        const size_t max_threads = get_max_threads();
-        const size_t thread_count = std::min(half, max_threads);
+        const size_t half = n / 2;
+        const double theta = std::numbers::pi / static_cast<double>(half);
 
         auto task = [&](const size_t t) {
             const size_t p_start = t * half / thread_count;
@@ -39,16 +37,11 @@ static void fft(const size_t n, const size_t s, const bool eo, ft_complex *x, ft
 
                 for (size_t q = 0; q < s; ++q) {
                     ft_complex a, b;
-                    ft_copy(x[q + s * p], a);
-                    ft_copy(x[q + s * (p + half)], b);
-                    ft_add(a, b, y[q + s * (2 * p)]);
-                    ft_sub(a, b, y[q + s * (2 * p + 1)]);
-                    ft_mul(y[q + s * (2 * p + 1)], w);
-                    // FT_COPY(x[q + s * p], a);
-                    // FT_COPY(x[q + s * (p + half)], b);
-                    // FT_ADD(a, b, y[q + s * (2 * p)]);
-                    // FT_SUB(a, b, y[q + s * (2 * p + 1)]);
-                    // FT_RMUL(y[q + s * (2 * p + 1)], w);
+                    FT_COPY(x[q + s * p], a);
+                    FT_COPY(x[q + s * (p + half)], b);
+                    FT_ADD(a, b, y[q + s * (2 * p)]);
+                    FT_SUB(a, b, y[q + s * (2 * p + 1)]);
+                    FT_RMUL(y[q + s * (2 * p + 1)], w);
                 }
             }
         };
@@ -60,8 +53,8 @@ static void fft(const size_t n, const size_t s, const bool eo, ft_complex *x, ft
         }
         task(0);
 
-        for (auto &thread: threads) {
-            thread.join();
+        for (auto &t: threads) {
+            t.join();
         }
 
         fft(half, 2 * s, !eo, y, x);
@@ -69,9 +62,8 @@ static void fft(const size_t n, const size_t s, const bool eo, ft_complex *x, ft
 }
 
 void Stockham_I_R2::forward(const size_t n, ft_complex *in, ft_complex *out) {
-    fft(n, 1, false, in, out);
+    fft(n, 1, false, in, out, get_max_threads());
     for (size_t i = 0; i < n; ++i) {
-        ft_copy(in[i], out[i]);
-        // FT_COPY(in[i], out[i]);
+        FT_COPY(in[i], out[i]);
     }
 }

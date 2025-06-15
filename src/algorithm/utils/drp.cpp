@@ -30,7 +30,7 @@ void quaternary_reversal_permutation(const size_t n, const ft_complex *in, ft_co
         const size_t start = t * batch_size + std::min(t, remainder);
         const size_t end = std::min(start + batch_size + (t < remainder ? 1 : 0), n);
         for (size_t i = start; i < end; ++i) {
-            ft_copy(in[i], out[quaternary_reverse64(i, log4_n)]);
+            FT_COPY(in[i], out[quaternary_reverse64(i, log4_n)]);
         }
     };
 
@@ -60,7 +60,7 @@ void digit_reversal_permutation(const size_t base, const size_t n, const ft_comp
                     reversed = reversed * base + x % base;
                     x /= base;
                 }
-                ft_copy(in[i], out[reversed]);
+                FT_COPY(in[i], out[reversed]);
             }
     }
 }

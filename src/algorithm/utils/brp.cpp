@@ -50,7 +50,7 @@ void bit_reversal_permutation(const size_t n, const ft_complex *in, ft_complex *
         const size_t start = t * batch_size + std::min(t, remainder);
         const size_t end = std::min(start + batch_size + (t < remainder ? 1 : 0), n);
         for (size_t i = start; i < end; ++i) {
-            ft_copy(in[i], out[bit_reverse64(i) >> shift]);
+            FT_COPY(in[i], out[bit_reverse64(i) >> shift]);
         }
     };
 

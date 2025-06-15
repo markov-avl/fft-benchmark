@@ -2,7 +2,6 @@
 
 #include <cmath>
 #include <future>
-#include <iostream>
 #include <numeric>
 #include <thread>
 
@@ -27,14 +26,14 @@ static void dft(const size_t n, ft_complex *data) {
 
         for (size_t m = 0; m < n; ++m) {
             ft_complex w;
-            ft_polar(-2.0 * std::numbers::pi * static_cast<double>(m * k) / static_cast<double>(n), w);
-            ft_mul(w, data[m]);
-            ft_add(temp[k], w);
+            FT_POLAR(-2.0 * std::numbers::pi * static_cast<double>(m * k) / static_cast<double>(n), w);
+            FT_RMUL(w, data[m]);
+            FT_RADD(temp[k], w);
         }
     }
 
     for (size_t k = 0; k < n; ++k) {
-        ft_copy(temp[k], data[k]);
+        FT_COPY(temp[k], data[k]);
     }
 
     delete[] temp;
@@ -46,7 +45,7 @@ static void fft(const size_t n, const size_t n1, const size_t n2, const ft_compl
 
     for (size_t k1 = 0; k1 < n1; ++k1) {
         for (size_t k2 = 0; k2 < n2; ++k2) {
-            ft_copy(in[n1 * k2 + k1], out[k1 * n2 + k2]);
+            FT_COPY(in[n1 * k2 + k1], out[k1 * n2 + k2]);
         }
     }
 
@@ -57,8 +56,8 @@ static void fft(const size_t n, const size_t n1, const size_t n2, const ft_compl
     for (size_t k1 = 0; k1 < n1; ++k1) {
         for (size_t k2 = 0; k2 < n2; ++k2) {
             ft_complex w;
-            ft_polar(-2.0 * std::numbers::pi * static_cast<double>(k1 * k2) / static_cast<double>(n), w);
-            ft_mul(w, out[k1 * n2 + k2], transposed[k2 * n1 + k1]);
+            FT_POLAR(-2.0 * std::numbers::pi * static_cast<double>(k1 * k2) / static_cast<double>(n), w);
+            FT_MUL(w, out[k1 * n2 + k2], transposed[k2 * n1 + k1]);
         }
     }
 
@@ -68,7 +67,7 @@ static void fft(const size_t n, const size_t n1, const size_t n2, const ft_compl
 
     for (size_t k1 = 0; k1 < n1; ++k1) {
         for (size_t k2 = 0; k2 < n2; ++k2) {
-            ft_copy(transposed[k2 * n1 + k1], out[n2 * k1 + k2]);
+            FT_COPY(transposed[k2 * n1 + k1], out[n2 * k1 + k2]);
         }
     }
 

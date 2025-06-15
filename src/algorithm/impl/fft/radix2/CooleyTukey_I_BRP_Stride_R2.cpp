@@ -20,10 +20,10 @@ static void fft(const size_t n, ft_complex *out, const size_t thread_count = 1) 
             for (ft_complex* group = out + start * step; group < out + end * step; group += step) {
                 for (size_t k = 0; k < half; ++k) {
                     ft_complex w;
-                    ft_polar(-std::numbers::pi * static_cast<double>(k) / static_cast<double>(half), w);
-                    ft_mul(w, group[half + k]);
-                    ft_sub(group[k], w, group[half + k]);
-                    ft_add(group[k], w);
+                    FT_POLAR(-std::numbers::pi * static_cast<double>(k) / static_cast<double>(half), w);
+                    FT_RMUL(w, group[half + k]);
+                    FT_SUB(group[k], w, group[half + k]);
+                    FT_RADD(group[k], w);
                 }
             }
         };

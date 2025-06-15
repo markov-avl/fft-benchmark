@@ -23,16 +23,15 @@ static void fft(const size_t n, ft_complex *out, const size_t thread_count = 1) 
 
             for (ft_complex* group = out + start * step; group < out + end * step; group += step) {
                 for (size_t k = 0; k < quarter; ++k) {
-                    ft_complex w1, w2, w3;
-                    ft_polar(-0.5 * std::numbers::pi * static_cast<double>(k) / static_cast<double>(quarter), w1);
-                    ft_polar(-std::numbers::pi * static_cast<double>(k) / static_cast<double>(quarter), w2);
-                    ft_polar(-1.5 * std::numbers::pi * static_cast<double>(k) / static_cast<double>(quarter), w3);
+                    ft_complex w1, w2, w3, m, m1w, m2w, m3w;
+                    FT_POLAR(-0.5 * std::numbers::pi * static_cast<double>(k) / static_cast<double>(quarter), w1);
+                    FT_POLAR(-std::numbers::pi * static_cast<double>(k) / static_cast<double>(quarter), w2);
+                    FT_POLAR(-1.5 * std::numbers::pi * static_cast<double>(k) / static_cast<double>(quarter), w3);
 
-                    ft_complex m, m1w, m2w, m3w;
-                    ft_copy(group[k], m);
-                    ft_mul(group[quarter + k], w1, m1w);
-                    ft_mul(group[2 * quarter + k], w2, m2w);
-                    ft_mul(group[3 * quarter + k], w3, m3w);
+                    FT_COPY(group[k], m);
+                    FT_MUL(group[quarter + k], w1, m1w);
+                    FT_MUL(group[2 * quarter + k], w2, m2w);
+                    FT_MUL(group[3 * quarter + k], w3, m3w);
 
                     group[k][0] += m1w[0] + m2w[0] + m3w[0];
                     group[k][1] += m1w[1] + m2w[1] + m3w[1];

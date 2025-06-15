@@ -10,16 +10,15 @@
 
 static void transform(const size_t quarter, ft_complex *data, const size_t from, const size_t to) {
     for (size_t k = from; k < to; ++k) {
-        ft_complex h1, h2, h3;
-        ft_polar(-0.5 * std::numbers::pi * static_cast<double>(k) / static_cast<double>(quarter), h1);
-        ft_polar(-std::numbers::pi * static_cast<double>(k) / static_cast<double>(quarter), h2);
-        ft_polar(-1.5 * std::numbers::pi * static_cast<double>(k) / static_cast<double>(quarter), h3);
+        ft_complex w1, w2, w3, m, m1w, m2w, m3w;
+        FT_POLAR(-0.5 * std::numbers::pi * static_cast<double>(k) / static_cast<double>(quarter), w1);
+        FT_POLAR(-std::numbers::pi * static_cast<double>(k) / static_cast<double>(quarter), w2);
+        FT_POLAR(-1.5 * std::numbers::pi * static_cast<double>(k) / static_cast<double>(quarter), w3);
 
-        ft_complex m, m1w, m2w, m3w;
-        ft_copy(data[k], m);
-        ft_mul(data[quarter + k], h1, m1w);
-        ft_mul(data[2 * quarter + k], h2, m2w);
-        ft_mul(data[3 * quarter + k], h3, m3w);
+        FT_COPY(data[k], m);
+        FT_MUL(data[quarter + k], w1, m1w);
+        FT_MUL(data[2 * quarter + k], w2, m2w);
+        FT_MUL(data[3 * quarter + k], w3, m3w);
 
         data[k][0] += m1w[0] + m2w[0] + m3w[0];
         data[k][1] += m1w[1] + m2w[1] + m3w[1];

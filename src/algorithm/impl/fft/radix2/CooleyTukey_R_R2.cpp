@@ -8,7 +8,7 @@
 
 static void fft(const size_t n, const ft_complex *in, ft_complex *out, const size_t thread_count = 1) {
     if (n == 1) {
-        ft_copy(in[0], out[0]);
+        FT_COPY(in[0], out[0]);
         return;
     }
 
@@ -19,8 +19,8 @@ static void fft(const size_t n, const ft_complex *in, ft_complex *out, const siz
     auto *odd_out = new ft_complex[half];
 
     for (size_t i = 0; i < half; ++i) {
-        ft_copy(in[2 * i], even_in[i]);
-        ft_copy(in[2 * i + 1], odd_in[i]);
+        FT_COPY(in[2 * i], even_in[i]);
+        FT_COPY(in[2 * i + 1], odd_in[i]);
     }
 
     if (thread_count > 1) {
@@ -32,12 +32,12 @@ static void fft(const size_t n, const ft_complex *in, ft_complex *out, const siz
         fft(half, odd_in, odd_out);
     }
 
-    ft_complex t;
     for (size_t k = 0; k < half; ++k) {
-        ft_polar(-std::numbers::pi * static_cast<double>(k) / static_cast<double>(half), t);
-        ft_mul(t, odd_out[k]);
-        ft_add(even_out[k], t, out[k]);
-        ft_sub(even_out[k], t, out[k + half]);
+        ft_complex t;
+        FT_POLAR(-std::numbers::pi * static_cast<double>(k) / static_cast<double>(half), t);
+        FT_RMUL(t, odd_out[k]);
+        FT_ADD(even_out[k], t, out[k]);
+        FT_SUB(even_out[k], t, out[k + half]);
     }
 
     delete[] even_in;

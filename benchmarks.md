@@ -90,7 +90,7 @@ sudo cmake-build-debug/Main \
   --generator random \
   --output output/2.csv \
   --runs 10 \
-  --threads 1
+  --threads 2
 ```
 
 ```bash

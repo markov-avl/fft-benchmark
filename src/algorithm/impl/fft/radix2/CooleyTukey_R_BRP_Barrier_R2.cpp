@@ -11,10 +11,10 @@
 static void transform(const size_t half, ft_complex *data, const size_t from, const size_t to) {
     for (size_t k = from; k < to; ++k) {
         ft_complex t;
-        ft_polar(-std::numbers::pi * static_cast<double>(k) / static_cast<double>(half), t);
-        ft_mul(t, data[half + k]);
-        ft_sub(data[k], t, data[half + k]);
-        ft_add(data[k], t);
+        FT_POLAR(-std::numbers::pi * static_cast<double>(k) / static_cast<double>(half), t);
+        FT_RMUL(t, data[half + k]);
+        FT_SUB(data[k], t, data[half + k]);
+        FT_RADD(data[k], t);
     }
 }
 

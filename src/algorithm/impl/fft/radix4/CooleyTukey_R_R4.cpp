@@ -8,7 +8,7 @@
 
 static void fft(const size_t n, const ft_complex *in, ft_complex *out, const size_t thread_count = 1) {
     if (n == 1) {
-        ft_copy(in[0], out[0]);
+        FT_COPY(in[0], out[0]);
         return;
     }
 
@@ -23,10 +23,10 @@ static void fft(const size_t n, const ft_complex *in, ft_complex *out, const siz
     auto* group_3_out = new ft_complex[quarter];
 
     for (size_t i = 0; i < quarter; ++i) {
-        ft_copy(in[4 * i], group_0_in[i]);
-        ft_copy(in[4 * i + 1], group_1_in[i]);
-        ft_copy(in[4 * i + 2], group_2_in[i]);
-        ft_copy(in[4 * i + 3], group_3_in[i]);
+        FT_COPY(in[4 * i], group_0_in[i]);
+        FT_COPY(in[4 * i + 1], group_1_in[i]);
+        FT_COPY(in[4 * i + 2], group_2_in[i]);
+        FT_COPY(in[4 * i + 3], group_3_in[i]);
     }
 
     if (thread_count > 3) {
@@ -46,16 +46,15 @@ static void fft(const size_t n, const ft_complex *in, ft_complex *out, const siz
     }
 
     for (size_t k = 0; k < quarter; ++k) {
-        ft_complex h1, h2, h3;
-        ft_polar(-0.5 * std::numbers::pi * static_cast<double>(k) / static_cast<double>(quarter), h1);
-        ft_polar(-std::numbers::pi * static_cast<double>(k) / static_cast<double>(quarter), h2);
-        ft_polar(-1.5 * std::numbers::pi * static_cast<double>(k) / static_cast<double>(quarter), h3);
+        ft_complex w1, w2, w3, m, m1w, m2w, m3w;
+        FT_POLAR(-0.5 * std::numbers::pi * static_cast<double>(k) / static_cast<double>(quarter), w1);
+        FT_POLAR(-std::numbers::pi * static_cast<double>(k) / static_cast<double>(quarter), w2);
+        FT_POLAR(-1.5 * std::numbers::pi * static_cast<double>(k) / static_cast<double>(quarter), w3);
 
-        ft_complex m, m1w, m2w, m3w;
-        ft_copy(group_0_out[k], m);
-        ft_mul(group_1_out[k], h1, m1w);
-        ft_mul(group_2_out[k], h2, m2w);
-        ft_mul(group_3_out[k], h3, m3w);
+        FT_COPY(group_0_out[k], m);
+        FT_MUL(group_1_out[k], w1, m1w);
+        FT_MUL(group_2_out[k], w2, m2w);
+        FT_MUL(group_3_out[k], w3, m3w);
 
         out[k][0] = m[0] + m1w[0] + m2w[0] + m3w[0];
         out[k][1] = m[1] + m1w[1] + m2w[1] + m3w[1];

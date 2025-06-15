@@ -26,37 +26,22 @@ static void fft(const size_t n,
         const size_t half = n / 2;
         const double theta = std::numbers::pi / static_cast<double>(half);
 
-        auto task = [&](const size_t t) {
-            const size_t p_start = t * half / thread_count;
-            const size_t p_end = t == thread_count - 1 ? half : (t + 1) * half / thread_count;
+        for (size_t p = 0; p < half; ++p) {
+            const double angle = static_cast<double>(p) * theta;
+            const ft_complex w = {std::cos(angle), -std::sin(angle)};
+            ft_complex a, b;
 
-            for (size_t p = p_start; p < p_end; ++p) {
-                const double angle = static_cast<double>(p) * theta;
-                const ft_complex w = {std::cos(angle), -std::sin(angle)};
-                ft_complex a, b;
-
-                FT_COPY(x[q + s * p], a);
-                FT_COPY(x[q + s * (p + half)], b);
-                FT_ADD(a, b, y[q + s * (2 * p)]);
-                FT_SUB(a, b, y[q + s * (2 * p + 1)]);
-                FT_RMUL(y[q + s * (2 * p + 1)], w);
-            }
-        };
-
-        std::vector<std::thread> threads;
-
-        for (size_t t = 1; t < thread_count; ++t) {
-            threads.emplace_back(task, t);
-        }
-        task(0);
-
-        for (auto &thread: threads) {
-            thread.join();
+            FT_COPY(x[q + s * p], a);
+            FT_COPY(x[q + s * (p + half)], b);
+            FT_ADD(a, b, y[q + s * (2 * p)]);
+            FT_SUB(a, b, y[q + s * (2 * p + 1)]);
+            FT_RMUL(y[q + s * (2 * p + 1)], w);
         }
 
-        if (thread_count > 1 && n >= 4) {
+        if (thread_count > 1) {
             std::thread t1(fft, half, 2 * s, q, !eo, y, x, thread_count / 2);
             fft(half, 2 * s, q + s, !eo, y, x, thread_count / 2);
+
             t1.join();
         } else {
             fft(half, 2 * s, q, !eo, y, x);

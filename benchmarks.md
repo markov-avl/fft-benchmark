@@ -89,6 +89,17 @@ sudo cmake-build-debug/Main \
   --measurer timer \
   --generator random \
   --output output/2.csv \
-  --runs 5 \
+  --runs 10 \
+  --threads 1
+```
+
+```bash
+sudo cmake-build-debug/Main \
+  --algorithms FFTW-E S-I-2 S-I-4 \
+  --sizes 256 1024 4096 16384 65536 262144 1048576 4194304 \
+  --measurer timer \
+  --generator random \
+  --output output/2.csv \
+  --runs 10 \
   --threads 1
 ```

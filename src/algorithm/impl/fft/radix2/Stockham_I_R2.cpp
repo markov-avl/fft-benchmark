@@ -20,6 +20,10 @@ static void fft(const size_t n, const size_t s, const bool eo, ft_complex *x, ft
             ft_copy(x[q + s], b);
             ft_add(a, b, z[q]);
             ft_sub(a, b, z[q + s]);
+            // FT_COPY(x[q], a);
+            // FT_COPY(x[q + s], b);
+            // FT_ADD(a, b, z[q]);
+            // FT_SUB(a, b, z[q + s]);
         }
     } else if (n > 2) {
         const size_t max_threads = get_max_threads();
@@ -31,7 +35,7 @@ static void fft(const size_t n, const size_t s, const bool eo, ft_complex *x, ft
 
             for (size_t p = p_start; p < p_end; ++p) {
                 const double angle = static_cast<double>(p) * theta;
-                ft_complex w = {std::cos(angle), -std::sin(angle)};
+                const ft_complex w = {std::cos(angle), -std::sin(angle)};
 
                 for (size_t q = 0; q < s; ++q) {
                     ft_complex a, b;
@@ -40,6 +44,11 @@ static void fft(const size_t n, const size_t s, const bool eo, ft_complex *x, ft
                     ft_add(a, b, y[q + s * (2 * p)]);
                     ft_sub(a, b, y[q + s * (2 * p + 1)]);
                     ft_mul(y[q + s * (2 * p + 1)], w);
+                    // FT_COPY(x[q + s * p], a);
+                    // FT_COPY(x[q + s * (p + half)], b);
+                    // FT_ADD(a, b, y[q + s * (2 * p)]);
+                    // FT_SUB(a, b, y[q + s * (2 * p + 1)]);
+                    // FT_RMUL(y[q + s * (2 * p + 1)], w);
                 }
             }
         };
@@ -63,5 +72,6 @@ void Stockham_I_R2::forward(const size_t n, ft_complex *in, ft_complex *out) {
     fft(n, 1, false, in, out);
     for (size_t i = 0; i < n; ++i) {
         ft_copy(in[i], out[i]);
+        // FT_COPY(in[i], out[i]);
     }
 }

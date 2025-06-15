@@ -17,8 +17,7 @@ void DFT::forward(const size_t n, ft_complex *in, ft_complex *out) {
 
     ft_complex sum;
     for (size_t k = 0; k < n; ++k) {
-        out[k][0] = 0.0;
-        out[k][1] = 0.0;
+        out[k][0] = 0.0, out[k][1] = 0.0;
 
         for (size_t t = 0; t < n; ++t) {
             ft_mul(twiddles[t * k % n], in[t], sum);

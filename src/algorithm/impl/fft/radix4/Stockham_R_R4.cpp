@@ -1,4 +1,4 @@
-#include "Stockham_R_R2.h"
+#include "Stockham_R_R4.h"
 
 #include <cmath>
 #include <thread>
@@ -61,7 +61,7 @@ static void fft(const size_t n, const size_t s, const size_t q, const bool eo, f
     }
 }
 
-void Stockham_R_R2::forward(const size_t n, ft_complex *in, ft_complex *out) {
+void Stockham_R_R4::forward(const size_t n, ft_complex *in, ft_complex *out) {
     fft(n, 1, 0, false, in, out);
     for (size_t i = 0; i < n; ++i) {
         ft_copy(in[i], out[i]);

@@ -24,9 +24,11 @@ static void fft(const size_t n, const size_t s, const bool eo, ft_complex *x, ft
     } else if (n > 2) {
         const size_t max_threads = get_max_threads();
         const size_t thread_count = std::min(half, max_threads);
-        const size_t chunk = half / thread_count;
 
-        auto task = [&](const size_t p_start, const size_t p_end) {
+        auto task = [&](const size_t t) {
+            const size_t p_start = t * half / thread_count;
+            const size_t p_end = t == thread_count - 1 ? half : (t + 1) * half / thread_count;
+
             for (size_t p = p_start; p < p_end; ++p) {
                 const double angle = static_cast<double>(p) * theta;
                 ft_complex w = {std::cos(angle), -std::sin(angle)};
@@ -45,11 +47,9 @@ static void fft(const size_t n, const size_t s, const bool eo, ft_complex *x, ft
         std::vector<std::thread> threads;
 
         for (size_t t = 1; t < thread_count; ++t) {
-            const size_t p_start = t * chunk;
-            const size_t p_end = t == thread_count - 1 ? half : (t + 1) * chunk;
-            threads.emplace_back(task, p_start, p_end);
+            threads.emplace_back(task, t);
         }
-        task(0, chunk);
+        task(0);
 
         for (auto &thread: threads) {
             thread.join();

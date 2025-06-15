@@ -28,13 +28,6 @@ static unsigned char reversed_bits[] = {
     0x0F, 0x8F, 0x4F, 0xCF, 0x2F, 0xAF, 0x6F, 0xEF, 0x1F, 0x9F, 0x5F, 0xDF, 0x3F, 0xBF, 0x7F, 0xFF
 };
 
-static int32_t bit_reverse32(const uint32_t i) {
-    return reversed_bits[i & 0xff] << 24 |
-           reversed_bits[i >> 8 & 0xff] << 16 |
-           reversed_bits[i >> 16 & 0xff] << 8 |
-           reversed_bits[i >> 24 & 0xff];
-}
-
 static uint64_t bit_reverse64(const uint64_t i) {
     return static_cast<uint64_t>(reversed_bits[i & 0xff]) << 56 |
            static_cast<uint64_t>(reversed_bits[i >> 8 & 0xff]) << 48 |
@@ -55,35 +48,9 @@ void bit_reversal_permutation(const size_t n, const ft_complex *in, ft_complex *
 
     auto permutate = [&](const size_t t) {
         const size_t start = t * batch_size + std::min(t, remainder);
-        const size_t end = start + batch_size + (t < remainder ? 1 : 0);
-        for (size_t i = start; i < std::min(end, n); ++i) {
+        const size_t end = std::min(start + batch_size + (t < remainder ? 1 : 0), n);
+        for (size_t i = start; i < end; ++i) {
             ft_copy(in[i], out[bit_reverse64(i) >> shift]);
-        }
-    };
-
-    for (size_t i = 1; i < thread_count; ++i) {
-        threads.emplace_back(permutate, i);
-    }
-    permutate(0);
-
-    for (auto &t: threads) {
-        t.join();
-    }
-}
-
-
-void bit_reversal_permutation(const size_t n, ft_complex *data) {
-    const size_t shift = 64 - std::countr_zero(n);
-    const size_t thread_count = get_max_threads();
-    const size_t batch_size = n / thread_count;
-    const size_t remainder = n % thread_count;
-    std::vector<std::thread> threads;
-
-    auto permutate = [&](const size_t t) {
-        const size_t start = t * batch_size + std::min(t, remainder);
-        const size_t end = start + batch_size + (t < remainder ? 1 : 0);
-        for (size_t i = start; i < std::min(end, n); ++i) {
-            std::swap(data[i], data[bit_reverse64(i) >> shift]);
         }
     };
 

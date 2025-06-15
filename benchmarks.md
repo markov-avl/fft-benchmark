@@ -74,3 +74,21 @@ sudo cmake-build-debug/Main \
   --runs 5 \
   --threads 2
 ```
+
+```bash
+sudo cmake-build-debug/Main \
+  --algorithms FFTW-E \
+    CT-I+B+BRP+S-2 CT-I+B+DRP+S-4 \
+    CT-I+BRP+S-2 CT-I+DRP+S-4 \
+    CT-R+B+BRP-2 CT-R+B+DRP-4 \
+    CT-R+BRP-2 CT-R+DRP-4 \
+    CT-R-2 CT-R-4 \
+    S-I-2 S-I-4 \
+    S-R-2 S-R-4 \
+  --sizes 256 1024 4096 16384 65536 262144 1048576 4194304 \
+  --measurer timer \
+  --generator random \
+  --output output/2.csv \
+  --runs 5 \
+  --threads 1
+```

@@ -3,10 +3,13 @@
 #include <cmath>
 #include <cstring>
 
-#include "types.h"
-
 #define FT_COPY(__from, __to) \
-    memcpy(&__to, &__from, 16)
+    __to[0] = __from[0]; \
+    __to[1] = __from[1]
+
+#define FT_ZERO(__a) \
+    __a[0] = 0.0; \
+    __a[1] = 0.0
 
 #define FT_MUL(__a, __b, __result) \
     __result[0] = __a[0] * __b[0] - __a[1] * __b[1]; \

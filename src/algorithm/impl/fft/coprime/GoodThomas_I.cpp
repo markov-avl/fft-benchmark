@@ -22,7 +22,7 @@ static size_t find_optimal_coprime(const size_t n) {
 static void dft(const size_t n, ft_complex *data) {
     auto *temp = new ft_complex[n];
     for (size_t k = 0; k < n; ++k) {
-        temp[k][0] = 0.0, temp[k][1] = 0.0;
+        FT_ZERO(temp[k]);
 
         for (size_t m = 0; m < n; ++m) {
             ft_complex w;

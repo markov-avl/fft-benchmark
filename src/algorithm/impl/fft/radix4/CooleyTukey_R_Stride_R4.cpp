@@ -19,14 +19,24 @@ static void fft(const size_t n,
     const size_t quarter = n / 4;
 
     if (thread_count > 3) {
-        std::thread t1(fft, quarter, in + step, out + quarter, step << 2, thread_count / 4);
-        std::thread t2(fft, quarter, in + 2 * step, out + 2 * quarter, step << 2, thread_count / 4);
-        std::thread t3(fft, quarter, in + 3 * step, out + 3 * quarter, step << 2, thread_count / 4);
-        fft(quarter, in, out, step << 2, thread_count / 4);
+        std::thread t1(fft, quarter, in, out, step << 2, thread_count / 4);
+        std::thread t2(fft, quarter, in + step, out + quarter, step << 2, thread_count / 4);
+        std::thread t3(fft, quarter, in + 2 * step, out + 2 * quarter, step << 2, thread_count / 4);
+        fft(quarter, in + 3 * step, out + 3 * quarter, step << 2, thread_count / 4);
 
         t1.join();
         t2.join();
         t3.join();
+    } else if (thread_count > 1) {
+        auto task = [&](const size_t t) {
+            fft(quarter, in + t * step, out + t * quarter, step << 2);
+            fft(quarter, in + (t + 2) * step, out + (t + 2) * quarter, step << 2);
+        };
+
+        std::thread t(task, 0);
+        task(1);
+
+        t.join();
     } else {
         fft(quarter, in, out, step << 2);
         fft(quarter, in + step, out + quarter, step << 2);

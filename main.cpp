@@ -10,7 +10,9 @@ std::string to_string(const std::vector<T> &vec, const std::string &delimiter = 
     std::ostringstream oss;
     for (size_t i = 0; i < vec.size(); ++i) {
         oss << vec[i];
-        if (i + 1 < vec.size()) oss << delimiter;
+        if (i + 1 < vec.size()) {
+            oss << delimiter;
+        }
     }
     return oss.str();
 }

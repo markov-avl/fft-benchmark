@@ -15,9 +15,7 @@ static void fft(const size_t n,
                 const size_t thread_count = 1) {
     if (n == 1) {
         if (eo) {
-            for (size_t q = 0; q < s; ++q) {
-                FT_COPY(x[q], y[q]);
-            }
+            FT_ARRAY_COPY(s, x, y);
         }
         return;
     }
@@ -80,7 +78,5 @@ static void fft(const size_t n,
 
 void Stockham_I_R4::forward(const size_t n, ft_complex *in, ft_complex *out) {
     fft(n, 1, false, in, out, get_max_threads());
-    for (size_t i = 0; i < n; ++i) {
-        FT_COPY(in[i], out[i]);
-    }
+    FT_ARRAY_COPY(n, in, out);
 }

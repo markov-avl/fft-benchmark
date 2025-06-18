@@ -2,7 +2,7 @@
 
 #include <filesystem>
 #include <fstream>
-#include <iostream>
+#include <sys/stat.h>
 
 
 void truncate_file(const std::string &file_name) {
@@ -13,6 +13,9 @@ void truncate_file(const std::string &file_name) {
 
 CsvOutputCollector::CsvOutputCollector(const std::string &file_path) : file_path(file_path) {
     truncate_file(file_path);
+    std::ofstream file(file_path, std::ios::out);
+    file.close();
+    chmod(file_path.c_str(), S_IROTH | S_IWOTH);
 }
 
 void CsvOutputCollector::add(const std::string &value) {
@@ -37,6 +40,6 @@ void CsvOutputCollector::newline() {
 
 void CsvOutputCollector::append_delimiter(std::ofstream &file) const {
     if (current_column > 0) {
-        file << ",";
+        file << ";";
     }
 }

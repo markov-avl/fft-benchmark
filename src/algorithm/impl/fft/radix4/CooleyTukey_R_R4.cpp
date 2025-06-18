@@ -13,14 +13,14 @@ static void fft(const size_t n, const ft_complex *in, ft_complex *out, const siz
     }
 
     const size_t quarter = n / 4;
-    auto* group_0_in = new ft_complex[quarter];
-    auto* group_1_in = new ft_complex[quarter];
-    auto* group_2_in = new ft_complex[quarter];
-    auto* group_3_in = new ft_complex[quarter];
-    auto* group_0_out = new ft_complex[quarter];
-    auto* group_1_out = new ft_complex[quarter];
-    auto* group_2_out = new ft_complex[quarter];
-    auto* group_3_out = new ft_complex[quarter];
+    auto *group_0_in = new ft_complex[quarter];
+    auto *group_1_in = new ft_complex[quarter];
+    auto *group_2_in = new ft_complex[quarter];
+    auto *group_3_in = new ft_complex[quarter];
+    auto *group_0_out = new ft_complex[quarter];
+    auto *group_1_out = new ft_complex[quarter];
+    auto *group_2_out = new ft_complex[quarter];
+    auto *group_3_out = new ft_complex[quarter];
 
     for (size_t i = 0; i < quarter; ++i) {
         FT_COPY(in[4 * i], group_0_in[i]);
@@ -30,19 +30,28 @@ static void fft(const size_t n, const ft_complex *in, ft_complex *out, const siz
     }
 
     if (thread_count > 3) {
-        std::thread t1(fft, quarter, group_1_in, group_1_out, thread_count / 4);
-        std::thread t2(fft, quarter, group_2_in, group_2_out, thread_count / 4);
-        std::thread t3(fft, quarter, group_3_in, group_3_out, thread_count / 4);
-        fft(quarter, group_0_in, group_0_out, thread_count / 4);
+        std::thread t1(fft, quarter, group_0_in, group_0_out, thread_count / 4);
+        std::thread t2(fft, quarter, group_1_in, group_1_out, thread_count / 4);
+        std::thread t3(fft, quarter, group_2_in, group_2_out, thread_count / 4);
+        fft(quarter, group_3_in, group_3_out, thread_count / 4);
 
         t1.join();
         t2.join();
         t3.join();
+    } else if (thread_count > 1) {
+        std::thread t([&] {
+            fft(quarter, group_0_in, group_0_out);
+            fft(quarter, group_1_in, group_1_out);
+        });
+        fft(quarter, group_2_in, group_2_out);
+        fft(quarter, group_3_in, group_3_out);
+
+        t.join();
     } else {
-        fft(quarter, group_0_in, group_0_out, thread_count / 4);
-        fft(quarter, group_1_in, group_1_out, thread_count / 4);
-        fft(quarter, group_2_in, group_2_out, thread_count / 4);
-        fft(quarter, group_3_in, group_3_out, thread_count / 4);
+        fft(quarter, group_0_in, group_0_out);
+        fft(quarter, group_1_in, group_1_out);
+        fft(quarter, group_2_in, group_2_out);
+        fft(quarter, group_3_in, group_3_out);
     }
 
     for (size_t k = 0; k < quarter; ++k) {

@@ -40,29 +40,38 @@ static void fft(const size_t n, ft_complex *data, const size_t thread_count = 1)
 
     if (thread_count > 3) {
         std::barrier barrier(4);
-        std::thread t1([&] {
-            fft(quarter, data, thread_count / 4);
+        const size_t batch_size = quarter / 4;
+        auto task = [&](const size_t t) {
+            fft(quarter, data + t * quarter, thread_count / 4);
             barrier.arrive_and_wait();
-            transform(quarter, data, 0, quarter / 4);
-        });
-        std::thread t2([&] {
-            fft(quarter, data + quarter, thread_count / 4);
-            barrier.arrive_and_wait();
-            transform(quarter, data, quarter / 4, quarter / 2);
-        });
-        std::thread t3([&] {
-            fft(quarter, data + 2 * quarter, thread_count / 4);
-            barrier.arrive_and_wait();
-            transform(quarter, data, quarter / 2, 3 * quarter / 4);
-        });
+            transform(quarter, data, t * batch_size, (t + 1) * batch_size);
+        };
 
-        fft(quarter, data + 3 * quarter, thread_count / 4);
-        barrier.arrive_and_wait();
-        transform(quarter, data, 3 * quarter / 4, quarter);
+        std::thread t1(task, 0);
+        std::thread t2(task, 1);
+        std::thread t3(task, 2);
+        task(3);
 
         t1.join();
         t2.join();
         t3.join();
+
+        return;
+    }
+    if (thread_count > 1) {
+        std::barrier barrier(2);
+        const size_t batch_size = quarter / 2;
+        auto task = [&](const size_t t) {
+            fft(quarter, data + t * quarter);
+            fft(quarter, data + (t + 2) * quarter);
+            barrier.arrive_and_wait();
+            transform(quarter, data, t * batch_size, (t + 1) * batch_size);
+        };
+
+        std::thread t(task, 0);
+        task(1);
+
+        t.join();
 
         return;
     }

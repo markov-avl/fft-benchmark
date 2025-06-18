@@ -15,19 +15,29 @@ static void fft(const size_t n, ft_complex *data, const size_t thread_count = 1)
     const size_t quarter = n / 4;
 
     if (thread_count > 3) {
-        std::thread t1(fft, quarter, data + quarter, thread_count / 4);
-        std::thread t2(fft, quarter, data + 2 * quarter, thread_count / 4);
-        std::thread t3(fft, quarter, data + 3 * quarter, thread_count / 4);
-        fft(quarter, data);
+        std::thread t1(fft, quarter, data, thread_count / 4);
+        std::thread t2(fft, quarter, data + quarter, thread_count / 4);
+        std::thread t3(fft, quarter, data + 2 * quarter, thread_count / 4);
+        fft(quarter, data + 3 * quarter, thread_count / 4);
 
         t1.join();
         t2.join();
         t3.join();
+    } else if (thread_count > 1) {
+        auto task = [&](const size_t t) {
+            fft(quarter, data + t * quarter);
+            fft(quarter, data + (t + 2) * quarter);
+        };
+
+        std::thread t(task, 0);
+        task(1);
+
+        t.join();
     } else {
-        fft(quarter, data, thread_count / 4);
-        fft(quarter, data + quarter, thread_count / 4);
-        fft(quarter, data + 2 * quarter, thread_count / 4);
-        fft(quarter, data + 3 * quarter, thread_count / 4);
+        fft(quarter, data);
+        fft(quarter, data + quarter);
+        fft(quarter, data + 2 * quarter);
+        fft(quarter, data + 3 * quarter);
     }
 
     for (size_t k = 0; k < quarter; ++k) {

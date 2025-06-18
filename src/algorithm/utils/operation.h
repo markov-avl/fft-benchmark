@@ -7,6 +7,9 @@
     __to[0] = __from[0]; \
     __to[1] = __from[1]
 
+#define FT_ARRAY_COPY(__n, __from, __to) \
+    memcpy(__to, __from, __n * 16)
+
 #define FT_ZERO(__a) \
     __a[0] = 0.0; \
     __a[1] = 0.0

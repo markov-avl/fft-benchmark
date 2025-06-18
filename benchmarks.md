@@ -85,12 +85,12 @@ sudo cmake-build-debug/Main \
     CT-R-2 CT-R-4 \
     S-I-2 S-I-4 \
     S-R-2 S-R-4 \
-  --sizes 256 1024 4096 16384 65536 262144 1048576 4194304 \
+  --sizes 256 1024 4096 16384 65536 262144 1048576 4194304 16777216 \
   --measurer timer \
   --generator random \
-  --output output/2.csv \
+  --output output/1-1.csv \
   --runs 10 \
-  --threads 2
+  --threads 1
 ```
 
 ```bash
@@ -100,6 +100,17 @@ sudo cmake-build-debug/Main \
   --measurer timer \
   --generator random \
   --output output/2.csv \
+  --runs 10 \
+  --threads 1
+```
+
+```bash
+sudo cmake-build-debug/Main \
+  --algorithms FFTW-E S-R-4 \
+  --sizes 256 1024 4096 16384 65536 262144 1048576 4194304 \
+  --measurer timer \
+  --generator random \
+  --output output/test.csv \
   --runs 10 \
   --threads 1
 ```

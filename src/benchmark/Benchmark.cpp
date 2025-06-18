@@ -44,9 +44,7 @@ void Benchmark::run(const std::string &output_file, const size_t threads) const 
 
         collector->add(std::to_string(size));
         for (auto &algorithm: algorithms) {
-            for (size_t i = 0; i < size; ++i) {
-                FT_COPY(in[i], in_copy[i]);
-            }
+            FT_ARRAY_COPY(size, in, in_copy);
 
             Experiment experiment(ALGORITHMS.at(algorithm), measurer, runs, size, in_copy);
             collector->add(experiment.run());

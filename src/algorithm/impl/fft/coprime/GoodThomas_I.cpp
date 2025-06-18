@@ -32,9 +32,7 @@ static void dft(const size_t n, ft_complex *data) {
         }
     }
 
-    for (size_t k = 0; k < n; ++k) {
-        FT_COPY(temp[k], data[k]);
-    }
+    FT_ARRAY_COPY(n, temp, data);
 
     delete[] temp;
 }

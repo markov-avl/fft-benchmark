@@ -27,15 +27,16 @@ static void fft(const size_t n, ft_complex *data, const size_t thread_count = 1)
 
     if (thread_count > 1) {
         std::barrier barrier(2);
-        std::thread t([&] {
-            fft(half, data, thread_count / 2);
+        const size_t batch_size = half / 2;
+        auto task = [&](const size_t t) {
+            fft(half, data + t * half, thread_count / 2);
             barrier.arrive_and_wait();
-            transform(half, data, 0, half / 2);
-        });
+            transform(half, data, t * batch_size, (t + 1) * batch_size);
+        };
 
-        fft(half, data + half, thread_count / 2);
-        barrier.arrive_and_wait();
-        transform(half, data, half / 2, half);
+        std::thread t(task, 0);
+        task(1);
+
         t.join();
 
         return;

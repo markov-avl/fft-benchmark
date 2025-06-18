@@ -12,7 +12,7 @@ static void fft(const size_t n,
                 const bool eo,
                 ft_complex *x,
                 ft_complex *y,
-                const size_t thread_count = 1) {
+                const size_t task_count = 1) {
     if (n == 2) {
         ft_complex *z = eo ? y : x;
 
@@ -26,10 +26,11 @@ static void fft(const size_t n,
     } else if (n > 2) {
         const size_t half = n / 2;
         const double theta = std::numbers::pi / static_cast<double>(half);
+        std::vector<std::thread> threads;
 
         auto task = [&](const size_t t) {
-            const size_t p_start = t * half / thread_count;
-            const size_t p_end = t == thread_count - 1 ? half : (t + 1) * half / thread_count;
+            const size_t p_start = t * half / task_count;
+            const size_t p_end = t == task_count - 1 ? half : (t + 1) * half / task_count;
 
             for (size_t p = p_start; p < p_end; ++p) {
                 const double angle = static_cast<double>(p) * theta;
@@ -46,9 +47,7 @@ static void fft(const size_t n,
             }
         };
 
-        std::vector<std::thread> threads;
-
-        for (size_t t = 1; t < thread_count; ++t) {
+        for (size_t t = 1; t < task_count; ++t) {
             threads.emplace_back(task, t);
         }
         task(0);

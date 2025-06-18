@@ -29,8 +29,8 @@ static void fft(const size_t n,
         for (size_t p = 0; p < half; ++p) {
             const double angle = static_cast<double>(p) * theta;
             const ft_complex w = {std::cos(angle), -std::sin(angle)};
-            ft_complex a, b;
 
+            ft_complex a, b;
             FT_COPY(x[q + s * p], a);
             FT_COPY(x[q + s * (p + half)], b);
             FT_ADD(a, b, y[q + s * (2 * p)]);

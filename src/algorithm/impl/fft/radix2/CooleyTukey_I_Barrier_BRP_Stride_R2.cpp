@@ -13,6 +13,7 @@
 static void fft(const size_t n, ft_complex *out, const size_t thread_count = 1) {
     const size_t threads_num = std::min(thread_count, static_cast<size_t>(std::log2(n)));
     std::barrier barrier(static_cast<long>(threads_num));
+    std::vector<std::thread> threads;
 
     auto task = [&](const size_t t) {
         for (size_t step = 2; step <= n; step <<= 1) {
@@ -21,7 +22,7 @@ static void fft(const size_t n, ft_complex *out, const size_t thread_count = 1) 
             const size_t start = t * (groups / threads_num) + std::min(t, groups % threads_num);
             const size_t end = start + groups / threads_num + (t < groups % threads_num ? 1 : 0);
 
-            for (ft_complex* group = out + start * step; group < out + end * step; group += step) {
+            for (ft_complex *group = out + start * step; group < out + end * step; group += step) {
                 for (size_t k = 0; k < half; ++k) {
                     ft_complex w;
                     FT_POLAR(-std::numbers::pi * static_cast<double>(k) / static_cast<double>(half), w);
@@ -35,13 +36,12 @@ static void fft(const size_t n, ft_complex *out, const size_t thread_count = 1) 
         }
     };
 
-    std::vector<std::thread> threads;
     for (size_t t = 1; t < threads_num; ++t) {
         threads.emplace_back(task, t);
     }
     task(0);
 
-    for (auto& t : threads) {
+    for (auto &t: threads) {
         t.join();
     }
 }

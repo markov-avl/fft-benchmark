@@ -1,7 +1,6 @@
 #include "GoodThomas_I.h"
 
 #include <cmath>
-#include <future>
 #include <numeric>
 #include <thread>
 
@@ -18,54 +17,41 @@ static size_t find_optimal_coprime(const size_t n) {
     return 1;
 }
 
-// TODO: Избавиться от использования DFT
-static void dft(const size_t n, ft_complex *data) {
-    auto *temp = new ft_complex[n];
-    for (size_t k = 0; k < n; ++k) {
-        FT_ZERO(temp[k]);
-
-        for (size_t m = 0; m < n; ++m) {
-            ft_complex w;
-            FT_POLAR(-2.0 * std::numbers::pi * static_cast<double>(m * k) / static_cast<double>(n), w);
-            FT_RMUL(w, data[m]);
-            FT_RADD(temp[k], w);
-        }
-    }
-
-    FT_ARRAY_COPY(n, temp, data);
-
-    delete[] temp;
-}
-
 // TODO: Нет многотопоточности
+// TODO: В алгоритме зашито DFT
 static void fft(const size_t n, const size_t n1, const size_t n2, const ft_complex *in, ft_complex *out) {
     auto *transposed = new ft_complex[n];
 
     for (size_t k1 = 0; k1 < n1; ++k1) {
         for (size_t k2 = 0; k2 < n2; ++k2) {
-            FT_COPY(in[n1 * k2 + k1], out[k1 * n2 + k2]);
-        }
-    }
+            const double angle_delta = -2.0 * std::numbers::pi * static_cast<double>(k2) / static_cast<double>(n2);
+            double angle = angle_delta;
 
-    for (size_t k1 = 0; k1 < n1; ++k1) {
-        dft(n2, out + k1 * n2);
-    }
+            FT_COPY(in[k1], out[k1 * n2 + k2]);
 
-    for (size_t k1 = 0; k1 < n1; ++k1) {
-        for (size_t k2 = 0; k2 < n2; ++k2) {
+            for (size_t m = 1; m < n2; ++m, angle += angle_delta) {
+                ft_complex w;
+                FT_POLAR(angle, w);
+                FT_RMUL(w, in[n1 * m + k1]);
+                FT_RADD(out[k1 * n2 + k2], w);
+            }
+
             ft_complex w;
             FT_POLAR(-2.0 * std::numbers::pi * static_cast<double>(k1 * k2) / static_cast<double>(n), w);
             FT_MUL(w, out[k1 * n2 + k2], transposed[k2 * n1 + k1]);
         }
     }
 
-    for (size_t k2 = 0; k2 < n2; ++k2) {
-        dft(n1, transposed + k2 * n1);
-    }
-
     for (size_t k1 = 0; k1 < n1; ++k1) {
         for (size_t k2 = 0; k2 < n2; ++k2) {
-            FT_COPY(transposed[k2 * n1 + k1], out[n2 * k1 + k2]);
+            FT_COPY(transposed[k2 * n1], out[n2 * k1 + k2]);
+
+            for (size_t m = 1; m < n1; ++m) {
+                ft_complex w;
+                FT_POLAR(-2.0 * std::numbers::pi * static_cast<double>(m * k1) / static_cast<double>(n1), w);
+                FT_RMUL(w, transposed[k2 * n1 + m]);
+                FT_RADD(out[n2 * k1 + k2], w);
+            }
         }
     }
 

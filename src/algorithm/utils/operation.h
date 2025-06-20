@@ -43,3 +43,7 @@
 #define FT_POLAR(__angle, __result) \
     __result[0] = std::cos(__angle); \
     __result[1] = std::sin(__angle)
+
+#define FT_CONJ(__result, __a) \
+    __result[0] = __a[0]; \
+    __result[1] = -__a[1]

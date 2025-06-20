@@ -4,16 +4,17 @@
 #include "algorithm/SupportedSequences.h"
 
 
-class GoodThomas_I final : public IFourierTransformAlgorithm {
-    size_t n1 = 1;
-    size_t n2 = 1;
-    ft_complex *transposed = nullptr;
+class Bluestein_I_Stockham_R2 final : public IFourierTransformAlgorithm {
+    size_t l = 0;
+    ft_complex *temp = nullptr;
+    ft_complex *u = nullptr;
+    ft_complex *v = nullptr;
 
 public:
-    static constexpr auto NAME = "GT-I";
+    static constexpr auto NAME = "B-I+S-2";
 
     [[nodiscard]] int supported_sequences() const override {
-        return COPRIME;
+        return ANY;
     }
 
 protected:

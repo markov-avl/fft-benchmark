@@ -8,20 +8,28 @@
 
 
 static size_t find_optimal_coprime(const size_t n) {
-    for (auto N1 = static_cast<size_t>(std::sqrt(n)); N1 > 1; --N1) {
-        if (n % N1 == 0 && std::gcd(N1, n / N1) == 1) {
-            return N1;
+    for (auto n1 = static_cast<size_t>(std::sqrt(n)); n1 > 1; --n1) {
+        if (n % n1 == 0 && std::gcd(n1, n / n1) == 1) {
+            return n1;
         }
     }
 
     return 1;
 }
 
+void GoodThomas_I::initialize(const size_t n, ft_complex *in, ft_complex *out) {
+    n1 = find_optimal_coprime(n);
+    n2 = n / n1;
+    transposed = new ft_complex[n];
+}
+
+void GoodThomas_I::finalize(const size_t n, ft_complex *in, ft_complex *out) {
+    delete[] transposed;
+}
+
 // TODO: Нет многотопоточности
 // TODO: В алгоритме зашито DFT
-static void fft(const size_t n, const size_t n1, const size_t n2, const ft_complex *in, ft_complex *out) {
-    auto *transposed = new ft_complex[n];
-
+void GoodThomas_I::forward(const size_t n, ft_complex *in, ft_complex *out) {
     for (size_t k1 = 0; k1 < n1; ++k1) {
         for (size_t k2 = 0; k2 < n2; ++k2) {
             const double angle_delta = -2.0 * std::numbers::pi * static_cast<double>(k2) / static_cast<double>(n2);
@@ -54,11 +62,4 @@ static void fft(const size_t n, const size_t n1, const size_t n2, const ft_compl
             }
         }
     }
-
-    delete[] transposed;
-}
-
-void GoodThomas_I::forward(const size_t n, ft_complex *in, ft_complex *out) {
-    const size_t n1 = find_optimal_coprime(n);
-    fft(n, n1, n / n1, in, out);
 }

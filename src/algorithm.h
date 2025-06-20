@@ -6,6 +6,7 @@
 
 #include "algorithm/IFourierTransformAlgorithm.h"
 #include "algorithm/impl/dft/DFT.h"
+#include "algorithm/impl/fft/any/Bluestein_I_Stockham_R2.h"
 #include "algorithm/impl/fft/coprime/GoodThomas_I.h"
 #include "algorithm/impl/fft/radix2/CooleyTukey_I_Barrier_BRP_Stride_R2.h"
 #include "algorithm/impl/fft/radix2/CooleyTukey_I_BRP_Stride_R2.h"
@@ -30,6 +31,7 @@
 
 static const std::map<std::string, std::shared_ptr<IFourierTransformAlgorithm> > ALGORITHMS = {
     {DFT::NAME, std::make_shared<DFT>()},
+    {Bluestein_I_Stockham_R2::NAME, std::make_shared<Bluestein_I_Stockham_R2>()},
     {GoodThomas_I::NAME, std::make_shared<GoodThomas_I>()},
     {CooleyTukey_I_Barrier_BRP_Stride_R2::NAME, std::make_shared<CooleyTukey_I_Barrier_BRP_Stride_R2>()},
     {CooleyTukey_I_BRP_Stride_R2::NAME, std::make_shared<CooleyTukey_I_BRP_Stride_R2>()},

@@ -7,7 +7,7 @@
 class Radix2FFT : public IFourierTransformAlgorithm {
 public:
     [[nodiscard]] int supported_sequences() const override {
-        return BASE_OF_2;
+        return RADIX_2;
     }
 
 protected:

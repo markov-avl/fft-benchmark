@@ -11,7 +11,7 @@ static const std::map<std::string, std::shared_ptr<IInputGenerator> > GENERATORS
     {ConstantInputGenerator::NAME, std::make_shared<ConstantInputGenerator>()},
     {ImpulseInputGenerator::NAME, std::make_shared<ImpulseInputGenerator>()},
     {RandomInputGenerator::NAME, std::make_shared<RandomInputGenerator>()},
-    {SinusoidalInputGenerator::NAME, std::make_shared<SinusoidalInputGenerator>()},
+    {SinusoidalInputGenerator::NAME, std::make_shared<SinusoidalInputGenerator>()}
 };
 
 inline std::vector<std::string> supported_generators() {

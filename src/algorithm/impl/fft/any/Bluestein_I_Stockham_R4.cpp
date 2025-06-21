@@ -56,7 +56,7 @@ static void stockham_forward(const size_t n, const size_t s, const bool eo, ft_c
 
 static void stockham_inverse(const size_t n, ft_complex *x, ft_complex *y) {
     for (size_t i = 0; i < n; ++i) {
-        x[i][1] = -x[i][1];
+        FT_RCONJ(x[i]);
     }
 
     stockham_forward(n, 1, false, x, y);
@@ -83,6 +83,7 @@ void Bluestein_I_Stockham_R4::finalize(const size_t n, ft_complex *in, ft_comple
     delete[] v;
 }
 
+// TODO: Нет многопоточности
 void Bluestein_I_Stockham_R4::forward(const size_t n, ft_complex *in, ft_complex *out) {
     for (size_t i = 0; i < n; ++i) {
         FT_POLAR(-std::numbers::pi * i * (static_cast<double>(i) / n), out[i]);

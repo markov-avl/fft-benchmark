@@ -7,7 +7,7 @@
 class Radix4FFT : public IFourierTransformAlgorithm {
 public:
     [[nodiscard]] int supported_sequences() const override {
-        return BASE_OF_4;
+        return RADIX_4;
     }
 
 protected:

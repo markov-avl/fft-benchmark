@@ -47,3 +47,6 @@
 #define FT_CONJ(__result, __a) \
     __result[0] = __a[0]; \
     __result[1] = -__a[1]
+
+#define FT_RCONJ(__a) \
+    __a[1] = -__a[1]

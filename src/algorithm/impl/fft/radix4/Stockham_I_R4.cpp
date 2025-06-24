@@ -72,7 +72,7 @@ static void fft(const size_t n,
         t.join();
     }
 
-    fft(n1, 4 * s, !eo, y, x);
+    fft(n1, 4 * s, !eo, y, x, thread_count);
 }
 
 void Stockham_I_R4::forward(const size_t n, ft_complex *in, ft_complex *out) {

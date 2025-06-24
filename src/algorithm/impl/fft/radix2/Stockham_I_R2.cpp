@@ -56,7 +56,7 @@ static void fft(const size_t n,
             t.join();
         }
 
-        fft(half, 2 * s, !eo, y, x);
+        fft(half, 2 * s, !eo, y, x, thread_count);
     }
 }
 

@@ -8,9 +8,9 @@ add_definitions(-DTEST_INCORRECT)
 file(GLOB_RECURSE SOURCES "src/*.cpp" "src/*.h")
 message("SOURCES=${SOURCES}")
 
-add_executable(Main main.cpp CLI/CLI11.hpp ${SOURCES})
-target_include_directories(Main PUBLIC src)
-target_link_libraries(Main PRIVATE fftw3 m)
+add_executable(FFTBenchmark main.cpp CLI/CLI11.hpp ${SOURCES})
+target_include_directories(FFTBenchmark PUBLIC src)
+target_link_libraries(FFTBenchmark PRIVATE fftw3 m)
 
 add_executable(Tests tests.cpp ${SOURCES})
 target_include_directories(Tests PUBLIC src)

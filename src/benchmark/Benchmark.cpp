@@ -3,11 +3,11 @@
 #include <map>
 #include <memory>
 
+#include "algorithm.h"
 #include "Experiment.h"
 #include "generation.h"
 #include "multiprocessing.h"
 #include "output.h"
-#include "algorithm/utils/operation.h"
 
 
 Benchmark::Benchmark(const std::vector<std::string> &algorithms,
@@ -51,6 +51,7 @@ void Benchmark::run(const std::string &output_file, const size_t threads) const 
         }
 
         delete[] in;
+        delete[] in_copy;
         collector->newline();
     }
 }

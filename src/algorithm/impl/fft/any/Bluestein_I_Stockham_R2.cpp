@@ -47,8 +47,8 @@ static void stockham_inverse(const size_t n, ft_complex *x, ft_complex *y) {
     stockham_forward(n, 1, false, x, y);
 
     for (size_t i = 0; i < n; ++i) {
-        x[i][0] = x[i][0] / n;
-        x[i][1] = -x[i][1] / n;
+        x[i][0] = x[i][0] / static_cast<double>(n);
+        x[i][1] = -x[i][1] / static_cast<double>(n);
     }
 }
 

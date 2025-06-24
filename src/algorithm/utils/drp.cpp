@@ -22,13 +22,10 @@ static uint64_t quaternary_reverse64(size_t i, const size_t log4_n) {
 void quaternary_reversal_permutation(const size_t n, const ft_complex *in, ft_complex *out) {
     const size_t log4_n = std::countr_zero(n) / 2;
     const size_t thread_count = get_max_threads();
-    const size_t batch_size = n / thread_count;
-    const size_t remainder = n % thread_count;
     std::vector<std::thread> threads;
 
     auto permutate = [&](const size_t t) {
-        const size_t start = t * batch_size + std::min(t, remainder);
-        const size_t end = std::min(start + batch_size + (t < remainder ? 1 : 0), n);
+        const auto [start, end] = thread_range(n, t, thread_count);
         for (size_t i = start; i < end; ++i) {
             FT_COPY(in[i], out[quaternary_reverse64(i, log4_n)]);
         }

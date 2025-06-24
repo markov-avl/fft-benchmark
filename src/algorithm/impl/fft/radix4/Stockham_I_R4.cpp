@@ -28,10 +28,9 @@ static void fft(const size_t n,
     std::vector<std::thread> threads;
 
     auto task = [&](const size_t t) {
-        const size_t p_start = t * n1 / thread_count;
-        const size_t p_end = t == thread_count - 1 ? n1 : (t + 1) * n1 / thread_count;
+        const auto [start, end] = thread_range(n1, t, thread_count);
 
-        for (size_t p = p_start; p < p_end; ++p) {
+        for (size_t p = start; p < end; ++p) {
             const double angle = static_cast<double>(p) * theta;
             const ft_complex w1 = {std::cos(angle), -std::sin(angle)};
             ft_complex w2, w3;

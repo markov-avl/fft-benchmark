@@ -15,8 +15,7 @@ static void fft(const size_t n, ft_complex *out, const size_t thread_count = 1) 
         std::vector<std::thread> threads;
 
         auto task = [&](const size_t t) {
-            const size_t start = t * (groups / threads_num) + std::min(t, groups % threads_num);
-            const size_t end = start + groups / threads_num + (t < groups % threads_num ? 1 : 0);
+            const auto [start, end] = thread_range(n / step, t, threads_num);
 
             for (ft_complex *group = out + start * step; group < out + end * step; group += step) {
                 for (size_t k = 0; k < quarter; ++k) {

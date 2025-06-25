@@ -25,6 +25,7 @@
 #include "algorithm/impl/fft/radix4/CooleyTukey_R_R4.h"
 #include "algorithm/impl/fft/radix4/CooleyTukey_R_Stride_R4.h"
 #include "algorithm/impl/fft/radix4/Stockham_I_R4.h"
+#include "algorithm/impl/fft/radix4/Stockham_I_TP_R4.h"
 #include "algorithm/impl/fft/radix4/Stockham_R_R4.h"
 #include "algorithm/impl/fftw/FFTWEstimate.h"
 #include "algorithm/utils/operation.h"
@@ -51,6 +52,7 @@ static const std::map<std::string, std::shared_ptr<IFourierTransformAlgorithm> >
     {CooleyTukey_R_R4::NAME, std::make_shared<CooleyTukey_R_R4>()},
     {CooleyTukey_R_Stride_R4::NAME, std::make_shared<CooleyTukey_R_Stride_R4>()},
     {Stockham_I_R4::NAME, std::make_shared<Stockham_I_R4>()},
+    {Stockham_I_TP_R4::NAME, std::make_shared<Stockham_I_TP_R4>()},
     {Stockham_R_R4::NAME, std::make_shared<Stockham_R_R4>()},
     {FFTWEstimate::NAME, std::make_shared<FFTWEstimate>()}
 };

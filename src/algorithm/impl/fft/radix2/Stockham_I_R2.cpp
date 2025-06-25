@@ -7,24 +7,17 @@
 #include "algorithm/utils/operation.h"
 
 
-static void fft(const size_t n,
-                const size_t s,
-                const bool eo,
-                ft_complex *x,
-                ft_complex *y,
-                const size_t thread_count = 1) {
-    if (n == 2) {
-        ft_complex *z = eo ? y : x;
+void Stockham_I_R2::forward(const size_t n, ft_complex *in, ft_complex *out) {
+    if (n == 1) {
+        FT_COPY(in[0], out[0]);
+        return;
+    }
 
-        for (size_t q = 0; q < s; ++q) {
-            ft_complex a, b;
-            FT_COPY(x[q], a);
-            FT_COPY(x[q + s], b);
-            FT_ADD(a, b, z[q]);
-            FT_SUB(a, b, z[q + s]);
-        }
-    } else if (n > 2) {
-        const size_t half = n / 2;
+    const size_t thread_count = get_max_threads();
+    ft_complex *x = in;
+    ft_complex *y = out;
+
+    for (size_t half = n >> 1, s = 1; half > 1; half >>= 1, s <<= 1) {
         const double theta = std::numbers::pi / static_cast<double>(half);
         std::vector<std::thread> threads;
 
@@ -55,11 +48,15 @@ static void fft(const size_t n,
             t.join();
         }
 
-        fft(half, 2 * s, !eo, y, x, thread_count);
+        std::swap(x, y);
     }
-}
 
-void Stockham_I_R2::forward(const size_t n, ft_complex *in, ft_complex *out) {
-    fft(n, 1, false, in, out, get_max_threads());
-    FT_ARRAY_COPY(n, in, out);
+    const size_t half = n >> 1;
+    for (size_t q = 0; q < half; ++q) {
+        ft_complex a, b;
+        FT_COPY(x[q], a);
+        FT_COPY(x[q + half], b);
+        FT_ADD(a, b, out[q]);
+        FT_SUB(a, b, out[q + half]);
+    }
 }

@@ -1,4 +1,4 @@
-#include "Stockham_I_R4.h"
+#include "Stockham_I_TP_R4.h"
 
 #include <cmath>
 #include <thread>
@@ -7,7 +7,15 @@
 #include "multiprocessing.h"
 
 
-void Stockham_I_R4::forward(const size_t n, ft_complex *in, ft_complex *out) {
+void Stockham_I_TP_R4::initialize(const size_t n, ft_complex *in, ft_complex *out) {
+    thread_pool = new ThreadPool(get_max_threads() - 1);
+}
+
+void Stockham_I_TP_R4::finalize(const size_t n, ft_complex *in, ft_complex *out) {
+    delete thread_pool;
+}
+
+void Stockham_I_TP_R4::forward(const size_t n, ft_complex *in, ft_complex *out) {
     if (n == 1) {
         FT_COPY(in[0], out[0]);
         return;
@@ -22,7 +30,6 @@ void Stockham_I_R4::forward(const size_t n, ft_complex *in, ft_complex *out) {
         const size_t n2 = n1 + n1;
         const size_t n3 = n1 + n2;
         const double theta = std::numbers::pi / static_cast<double>(n2);
-        std::vector<std::thread> threads;
 
         auto task = [&](const size_t t) {
             const auto [start, end] = thread_range(n1, t, thread_count);
@@ -60,13 +67,10 @@ void Stockham_I_R4::forward(const size_t n, ft_complex *in, ft_complex *out) {
         };
 
         for (size_t t = 1; t < thread_count; ++t) {
-            threads.emplace_back(task, t);
+            thread_pool->enqueue(task, t);
         }
         task(0);
-
-        for (auto &t: threads) {
-            t.join();
-        }
+        thread_pool->wait_all();
 
         std::swap(x, y);
     }

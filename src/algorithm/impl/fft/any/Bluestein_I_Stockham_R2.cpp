@@ -58,8 +58,8 @@ void Bluestein_I_Stockham_R2::initialize(const size_t n, ft_complex *in, ft_comp
     }
 
     temp = new ft_complex[l];
-    u = new ft_complex[l]{};
-    v = new ft_complex[l]{};
+    u = new ft_complex[l];
+    v = new ft_complex[l];
 }
 
 void Bluestein_I_Stockham_R2::finalize(const size_t n, ft_complex *in, ft_complex *out) {
@@ -74,6 +74,9 @@ void Bluestein_I_Stockham_R2::forward(const size_t n, ft_complex *in, ft_complex
         FT_POLAR(-std::numbers::pi * i * (static_cast<double>(i) / n), out[i]);
         FT_MUL(in[i], out[i], u[i]);
         FT_CONJ(v[i], out[i]);
+    }
+    for (size_t i = n; i < l; ++i) {
+        FT_ZERO(u[i]);
     }
 
     for (size_t i = 1; i < n; ++i) {

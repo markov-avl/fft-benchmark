@@ -110,6 +110,7 @@ void Bluestein_I_Stockham_R4::forward(const size_t n, ft_complex *in, ft_complex
 
     for (size_t i = n; i < l; ++i) {
         FT_ZERO(u[i]);
+        FT_ZERO(v[i]);
     }
     for (size_t i = 1; i < n; ++i) {
         FT_COPY(v[i], v[l - i]);

@@ -7,7 +7,6 @@
 class GoodThomas_I final : public IFourierTransformAlgorithm {
     size_t n1 = 1;
     size_t n2 = 1;
-    ft_complex *transposed = nullptr;
 
 public:
     static constexpr auto NAME = "GT-I";
@@ -17,9 +16,9 @@ public:
     }
 
 protected:
-    void initialize(size_t n, ft_complex *in, ft_complex *out) override;
+    void check_preconditions(size_t n, ft_complex *in, ft_complex *out) override;
 
-    void finalize(size_t n, ft_complex *in, ft_complex *out) override;
+    void initialize(size_t n, ft_complex *in, ft_complex *out) override;
 
     void forward(size_t n, ft_complex *in, ft_complex *out) override;
 };

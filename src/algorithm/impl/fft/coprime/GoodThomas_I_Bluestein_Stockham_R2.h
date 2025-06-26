@@ -18,7 +18,5 @@ public:
 protected:
     void check_preconditions(size_t n, ft_complex *in, ft_complex *out) override;
 
-    void initialize(size_t n, ft_complex *in, ft_complex *out) override;
-
     void forward(size_t n, ft_complex *in, ft_complex *out) override;
 };

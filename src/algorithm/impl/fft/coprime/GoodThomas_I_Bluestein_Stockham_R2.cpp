@@ -69,19 +69,22 @@ static void stockham_inverse(const size_t n, ft_complex *sequence) {
     }
 }
 
-// Вспомогательная функция для Bluesteин+StockhamRadix2 (однопоточная)
 static void bluestein_stockham_forward(const size_t n, ft_complex *sequence) {
-    size_t l = 1;
+    size_t l;
     const size_t k = 2 * n - 1;
-    while (l < k) l <<= 1;
+    for (l = 1; l < k; l <<= 1) {
+    }
+
     auto *u = new ft_complex[l];
     auto *v = new ft_complex[l];
     auto *chirp = new ft_complex[n];
+
     for (size_t i = 0; i < n; ++i) {
         FT_POLAR(-std::numbers::pi * i * (static_cast<double>(i) / n), chirp[i]);
         FT_MUL(sequence[i], chirp[i], u[i]);
         FT_CONJ(v[i], chirp[i]);
     }
+
     for (size_t i = n; i < l; ++i) {
         FT_ZERO(u[i]);
         FT_ZERO(v[i]);
@@ -89,16 +92,20 @@ static void bluestein_stockham_forward(const size_t n, ft_complex *sequence) {
     for (size_t i = 1; i < n; ++i) {
         FT_COPY(v[i], v[l - i]);
     }
+
     stockham_forward(l, u);
     stockham_forward(l, v);
+
     for (size_t i = 0; i < l; ++i) {
         FT_RMUL(u[i], v[i]);
     }
+
     stockham_inverse(l, u);
+
     for (size_t i = 0; i < n; ++i) {
-        FT_RMUL(u[i], chirp[i]);
-        FT_COPY(u[i], sequence[i]);
+        FT_MUL(u[i], chirp[i], sequence[i]);
     }
+
     delete[] u;
     delete[] v;
     delete[] chirp;
@@ -106,19 +113,18 @@ static void bluestein_stockham_forward(const size_t n, ft_complex *sequence) {
 
 void GoodThomas_I_Bluestein_Stockham_R2::check_preconditions(const size_t n, ft_complex *in, ft_complex *out) {
     n1 = find_optimal_coprime(n);
+    n2 = n / n1;
     if (n1 == 1) {
-        throw std::invalid_argument("n should be decomposed as coprimes");
+        throw std::invalid_argument("n should be decomposed as coprime");
     }
 }
 
-void GoodThomas_I_Bluestein_Stockham_R2::initialize(const size_t n, ft_complex *in, ft_complex *out) {
-    n2 = n / n1;
-}
-
 void GoodThomas_I_Bluestein_Stockham_R2::forward(const size_t n, ft_complex *in, ft_complex *out) {
+    const size_t thread_count = get_max_threads();
+    std::vector<std::thread> threads;
+    std::barrier barrier(static_cast<long>(thread_count));
+
     auto *x = new ft_complex[n];
-    auto *temp_row = new ft_complex[n2];
-    auto *temp_col = new ft_complex[n1];
 
     for (size_t k1 = 0; k1 < n1; ++k1) {
         for (size_t k2 = 0; k2 < n2; ++k2) {
@@ -126,31 +132,39 @@ void GoodThomas_I_Bluestein_Stockham_R2::forward(const size_t n, ft_complex *in,
         }
     }
 
-    for (size_t k1 = 0; k1 < n1; ++k1) {
-        for (size_t k2 = 0; k2 < n2; ++k2) {
-            FT_COPY(x[k1 * n2 + k2], temp_row[k2]);
+    auto task = [&](const size_t t) {
+        for (size_t k1 = t; k1 < n1; k1 += thread_count) {
+            bluestein_stockham_forward(n2, x + k1 * n2);
         }
-        bluestein_stockham_forward(n2, temp_row);
-        for (size_t k2 = 0; k2 < n2; ++k2) {
-            FT_COPY(temp_row[k2], x[k1 * n2 + k2]);
-        }
-    }
 
-    for (size_t k2 = 0; k2 < n2; ++k2) {
-        for (size_t k1 = 0; k1 < n1; ++k1) {
-            FT_COPY(x[k1 * n2 + k2], temp_col[k1]);
+        barrier.arrive_and_wait();
+
+        auto *temp = new ft_complex[n1];
+
+        for (size_t k2 = t; k2 < n2; k2 += thread_count) {
+            for (size_t k1 = 0; k1 < n1; ++k1) {
+                FT_COPY(x[k1 * n2 + k2], temp[k1]);
+            }
+            bluestein_stockham_forward(n1, temp);
+            for (size_t k1 = 0; k1 < n1; ++k1) {
+                FT_COPY(temp[k1], x[k1 * n2 + k2]);
+            }
         }
-        bluestein_stockham_forward(n1, temp_col);
-        for (size_t k1 = 0; k1 < n1; ++k1) {
-            FT_COPY(temp_col[k1], x[k1 * n2 + k2]);
-        }
+
+        delete[] temp;
+    };
+
+    for (size_t t = 1; t < thread_count; ++t) {
+        threads.emplace_back(task, t);
+    }
+    task(0);
+    for (auto &t: threads) {
+        t.join();
     }
 
     for (size_t k = 0; k < n; ++k) {
         FT_COPY(x[k % n1 * n2 + k % n2], out[k]);
     }
 
-    delete[] temp_row;
-    delete[] temp_col;
     delete[] x;
 }

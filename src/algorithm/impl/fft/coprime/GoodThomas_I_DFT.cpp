@@ -21,13 +21,10 @@ static size_t find_optimal_coprime(const size_t n) {
 
 void GoodThomas_I_DFT::check_preconditions(const size_t n, ft_complex *in, ft_complex *out) {
     n1 = find_optimal_coprime(n);
-    if (n1 == 1) {
-        throw std::invalid_argument("n should be decomposed as coprimes");
-    }
-}
-
-void GoodThomas_I_DFT::initialize(const size_t n, ft_complex *in, ft_complex *out) {
     n2 = n / n1;
+    if (n1 == 1) {
+        throw std::invalid_argument("n should be decomposed as coprime");
+    }
 }
 
 void GoodThomas_I_DFT::forward(const size_t n, ft_complex *in, ft_complex *out) {

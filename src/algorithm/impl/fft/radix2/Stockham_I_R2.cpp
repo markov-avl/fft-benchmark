@@ -22,9 +22,7 @@ void Stockham_I_R2::forward(const size_t n, ft_complex *in, ft_complex *out) {
         std::vector<std::thread> threads;
 
         auto task = [&](const size_t t) {
-            const auto [start, end] = thread_range(half, t, thread_count);
-
-            for (size_t p = start; p < end; ++p) {
+            for (size_t p = t; p < half; p += thread_count) {
                 const double angle = static_cast<double>(p) * theta;
                 const ft_complex w = {std::cos(angle), -std::sin(angle)};
 

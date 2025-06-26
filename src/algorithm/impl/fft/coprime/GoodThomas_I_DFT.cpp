@@ -34,8 +34,7 @@ void GoodThomas_I_DFT::forward(const size_t n, ft_complex *in, ft_complex *out) 
     std::barrier barrier(static_cast<long>(thread_count));
 
     auto task = [&](const size_t t) {
-        const auto [n1_start, n1_end] = thread_range(n1, t, thread_count);
-        for (size_t k1 = n1_start; k1 < n1_end; ++k1) {
+        for (size_t k1 = t; k1 < n1; k1 += thread_count) {
             for (size_t k2 = 0; k2 < n2; ++k2) {
                 const double angle_delta = -2.0 * std::numbers::pi * static_cast<double>(k2) / static_cast<double>(n2);
                 double angle = angle_delta;
@@ -57,8 +56,7 @@ void GoodThomas_I_DFT::forward(const size_t n, ft_complex *in, ft_complex *out) 
 
         barrier.arrive_and_wait();
 
-        const auto [n2_start, n2_end] = thread_range(n2, t, thread_count);
-        for (size_t k2 = n2_start; k2 < n2_end; ++k2) {
+        for (size_t k2 = t; k2 < n2; k2 += thread_count) {
             for (size_t k1 = 0; k1 < n1; ++k1) {
                 const double angle_delta = -2.0 * std::numbers::pi * static_cast<double>(k1) / static_cast<double>(n1);
                 double angle = angle_delta;

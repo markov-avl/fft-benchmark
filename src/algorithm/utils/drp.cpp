@@ -25,8 +25,7 @@ void quaternary_reversal_permutation(const size_t n, const ft_complex *in, ft_co
     std::vector<std::thread> threads;
 
     auto permutate = [&](const size_t t) {
-        const auto [start, end] = thread_range(n, t, thread_count);
-        for (size_t i = start; i < end; ++i) {
+        for (size_t i = t; i < n; i += thread_count) {
             FT_COPY(in[i], out[quaternary_reverse64(i, log4_n)]);
         }
     };

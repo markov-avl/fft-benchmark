@@ -32,9 +32,7 @@ void Stockham_I_TP_R4::forward(const size_t n, ft_complex *in, ft_complex *out) 
         const double theta = std::numbers::pi / static_cast<double>(n2);
 
         auto task = [&](const size_t t) {
-            const auto [start, end] = thread_range(n1, t, thread_count);
-
-            for (size_t p = start; p < end; ++p) {
+            for (size_t p = t; p < n1; p += thread_count) {
                 const double angle = static_cast<double>(p) * theta;
                 const ft_complex w1 = {std::cos(angle), -std::sin(angle)};
                 ft_complex w2, w3;

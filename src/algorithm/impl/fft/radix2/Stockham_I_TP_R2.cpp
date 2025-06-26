@@ -3,8 +3,7 @@
 #include <cmath>
 #include <thread>
 
-#include "multiprocessing.h"
-#include "algorithm/utils/operation.h"
+#include "algorithm.h"
 
 
 void Stockham_I_TP_R2::initialize(const size_t n, ft_complex *in, ft_complex *out) {
@@ -29,9 +28,7 @@ void Stockham_I_TP_R2::forward(const size_t n, ft_complex *in, ft_complex *out) 
         const double theta = std::numbers::pi / static_cast<double>(half);
 
         auto task = [&](const size_t t) {
-            const auto [start, end] = thread_range(half, t, thread_count);
-
-            for (size_t p = start; p < end; ++p) {
+            for (size_t p = t; p < half; p += thread_count) {
                 const double angle = static_cast<double>(p) * theta;
                 const ft_complex w = {std::cos(angle), -std::sin(angle)};
 

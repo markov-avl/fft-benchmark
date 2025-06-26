@@ -19,9 +19,7 @@ static void stockham_forward(const size_t n, ft_complex *sequence, const size_t 
         std::vector<std::thread> threads;
 
         auto task = [&](const size_t t) {
-            const auto [start, end] = thread_range(n1, t, thread_count);
-
-            for (size_t p = start; p < end; ++p) {
+            for (size_t p = t; p < n1; p += thread_count) {
                 const double angle = static_cast<double>(p) * theta;
                 const ft_complex w1 = {std::cos(angle), -std::sin(angle)};
                 ft_complex w2, w3;
@@ -92,8 +90,7 @@ void Bluestein_I_Stockham_R4::forward(const size_t n, ft_complex *in, ft_complex
     auto *v = new ft_complex[l];
 
     auto task = [&](const size_t t) {
-        const auto [start, end] = thread_range(n, t, thread_count);
-        for (size_t i = start; i < end; ++i) {
+        for (size_t i = t; i < n; i += thread_count) {
             FT_POLAR(-std::numbers::pi * i * (static_cast<double>(i) / n), out[i]);
             FT_MUL(in[i], out[i], u[i]);
             FT_CONJ(v[i], out[i]);

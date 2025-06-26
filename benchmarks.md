@@ -55,7 +55,7 @@ sudo cmake-build-debug/FFTBenchmark \
 
 ```bash
 sudo cmake-build-debug/FFTBenchmark \
-  --algorithms FFTW-E GT-I \
+  --algorithms FFTW-E GT-I+DFT \
   --sizes 1045506 \
   --measurer timer \
   --generator random \

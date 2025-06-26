@@ -4,12 +4,12 @@
 #include "algorithm/SupportedSequences.h"
 
 
-class GoodThomas_I final : public IFourierTransformAlgorithm {
+class GoodThomas_I_DFT final : public IFourierTransformAlgorithm {
     size_t n1 = 1;
     size_t n2 = 1;
 
 public:
-    static constexpr auto NAME = "GT-I";
+    static constexpr auto NAME = "GT-I+DFT";
 
     [[nodiscard]] int supported_sequences() const override {
         return COPRIME;

@@ -1,4 +1,4 @@
-#include "GoodThomas_I.h"
+#include "GoodThomas_I_DFT.h"
 
 #include <barrier>
 #include <cmath>
@@ -19,19 +19,18 @@ static size_t find_optimal_coprime(const size_t n) {
     return 1;
 }
 
-void GoodThomas_I::check_preconditions(const size_t n, ft_complex *in, ft_complex *out) {
+void GoodThomas_I_DFT::check_preconditions(const size_t n, ft_complex *in, ft_complex *out) {
     n1 = find_optimal_coprime(n);
     if (n1 == 1) {
         throw std::invalid_argument("n should be decomposed as coprimes");
     }
 }
 
-void GoodThomas_I::initialize(const size_t n, ft_complex *in, ft_complex *out) {
+void GoodThomas_I_DFT::initialize(const size_t n, ft_complex *in, ft_complex *out) {
     n2 = n / n1;
 }
 
-// TODO: В алгоритме зашито DFT
-void GoodThomas_I::forward(const size_t n, ft_complex *in, ft_complex *out) {
+void GoodThomas_I_DFT::forward(const size_t n, ft_complex *in, ft_complex *out) {
     const auto transposed = new ft_complex[n];
     const size_t thread_count = get_max_threads();
     std::vector<std::thread> threads;

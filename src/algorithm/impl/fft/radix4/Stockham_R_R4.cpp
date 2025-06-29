@@ -13,7 +13,7 @@ static void fft(const size_t n,
                 const bool eo,
                 ft_complex *x,
                 ft_complex *y,
-                const size_t thread_count = 1) {
+                const size_t T = 1) {
     if (n == 1) {
         if (eo) {
             FT_COPY(x[q], y[q]);
@@ -55,16 +55,16 @@ static void fft(const size_t n,
         FT_RMUL(y[q + s * (4 * p + 3)], w3);
     }
 
-    if (thread_count > 3) {
-        std::thread t1(fft, n1, 4 * s, q, !eo, y, x, thread_count / 4);
-        std::thread t2(fft, n1, 4 * s, q + s, !eo, y, x, thread_count / 4);
-        std::thread t3(fft, n1, 4 * s, q + 2 * s, !eo, y, x, thread_count / 4);
-        fft(n1, 4 * s, q + 3 * s, !eo, y, x, thread_count / 4);
+    if (T > 3) {
+        std::thread t1(fft, n1, 4 * s, q, !eo, y, x, T / 4);
+        std::thread t2(fft, n1, 4 * s, q + s, !eo, y, x, T / 4);
+        std::thread t3(fft, n1, 4 * s, q + 2 * s, !eo, y, x, T / 4);
+        fft(n1, 4 * s, q + 3 * s, !eo, y, x, T / 4);
 
         t1.join();
         t2.join();
         t3.join();
-    } else if (thread_count > 1) {
+    } else if (T > 1) {
         auto task = [&](const size_t t) {
             fft(n1, 4 * s, q + t * s, !eo, y, x);
             fft(n1, 4 * s, q + (t + 2) * s, !eo, y, x);

@@ -8,6 +8,8 @@ Makefile
 cmake_install.cmake
 *.swp
 
+.venv/
+
 /output
 /presentation/presentation.html
 /presentation/presentation.pdf

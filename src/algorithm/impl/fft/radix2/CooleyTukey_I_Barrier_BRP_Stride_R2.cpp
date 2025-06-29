@@ -10,8 +10,8 @@
 #include "multiprocessing.h"
 
 
-static void fft(const size_t n, ft_complex *out, const size_t thread_count = 1) {
-    const size_t threads_num = std::min(thread_count, static_cast<size_t>(std::log2(n)));
+static void fft(const size_t n, ft_complex *out, const size_t T = 1) {
+    const size_t threads_num = std::min(T, static_cast<size_t>(std::log2(n)));
     std::barrier barrier(static_cast<long>(threads_num));
     std::vector<std::thread> threads;
 

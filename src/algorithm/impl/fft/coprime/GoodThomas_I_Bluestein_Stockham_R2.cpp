@@ -120,9 +120,9 @@ void GoodThomas_I_Bluestein_Stockham_R2::check_preconditions(const size_t n, ft_
 }
 
 void GoodThomas_I_Bluestein_Stockham_R2::forward(const size_t n, ft_complex *in, ft_complex *out) {
-    const size_t thread_count = get_max_threads();
+    const size_t T = get_max_threads();
     std::vector<std::thread> threads;
-    std::barrier barrier(static_cast<long>(thread_count));
+    std::barrier barrier(static_cast<long>(T));
 
     auto *x = new ft_complex[n];
 
@@ -133,7 +133,8 @@ void GoodThomas_I_Bluestein_Stockham_R2::forward(const size_t n, ft_complex *in,
     }
 
     auto task = [&](const size_t t) {
-        for (size_t k1 = t; k1 < n1; k1 += thread_count) {
+        const auto [n1_start, n1_end] = thread_range(n1, t, T);
+        for (size_t k1 = n1_start; k1 < n1_end; ++k1) {
             bluestein_stockham_forward(n2, x + k1 * n2);
         }
 
@@ -141,7 +142,8 @@ void GoodThomas_I_Bluestein_Stockham_R2::forward(const size_t n, ft_complex *in,
 
         auto *temp = new ft_complex[n1];
 
-        for (size_t k2 = t; k2 < n2; k2 += thread_count) {
+        const auto [n2_start, n2_end] = thread_range(n2, t, T);
+        for (size_t k2 = n2_start; k2 < n2_end; ++k2) {
             for (size_t k1 = 0; k1 < n1; ++k1) {
                 FT_COPY(x[k1 * n2 + k2], temp[k1]);
             }
@@ -154,7 +156,7 @@ void GoodThomas_I_Bluestein_Stockham_R2::forward(const size_t n, ft_complex *in,
         delete[] temp;
     };
 
-    for (size_t t = 1; t < thread_count; ++t) {
+    for (size_t t = 1; t < T; ++t) {
         threads.emplace_back(task, t);
     }
     task(0);

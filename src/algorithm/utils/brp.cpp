@@ -41,16 +41,17 @@ static uint64_t bit_reverse64(const uint64_t i) {
 
 void bit_reversal_permutation(const size_t n, const ft_complex *in, ft_complex *out) {
     const size_t shift = 64 - std::countr_zero(n);
-    const size_t thread_count = get_max_threads();
+    const size_t T = get_max_threads();
     std::vector<std::thread> threads;
 
     auto permutate = [&](const size_t t) {
-        for (size_t i = t; i < n; i += thread_count) {
+        const auto [start, end] = thread_range(n, t, T);
+        for (size_t i = start; i < end; ++i) {
             FT_COPY(in[i], out[bit_reverse64(i) >> shift]);
         }
     };
 
-    for (size_t i = 1; i < thread_count; ++i) {
+    for (size_t i = 1; i < T; ++i) {
         threads.emplace_back(permutate, i);
     }
     permutate(0);

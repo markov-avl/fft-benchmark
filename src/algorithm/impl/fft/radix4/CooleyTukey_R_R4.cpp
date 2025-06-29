@@ -6,7 +6,7 @@
 #include "algorithm/utils/operation.h"
 
 
-static void fft(const size_t n, const ft_complex *in, ft_complex *out, const size_t thread_count = 1) {
+static void fft(const size_t n, const ft_complex *in, ft_complex *out, const size_t T = 1) {
     if (n == 1) {
         FT_COPY(in[0], out[0]);
         return;
@@ -29,16 +29,16 @@ static void fft(const size_t n, const ft_complex *in, ft_complex *out, const siz
         FT_COPY(in[4 * i + 3], group_3_in[i]);
     }
 
-    if (thread_count > 3) {
-        std::thread t1(fft, quarter, group_0_in, group_0_out, thread_count / 4);
-        std::thread t2(fft, quarter, group_1_in, group_1_out, thread_count / 4);
-        std::thread t3(fft, quarter, group_2_in, group_2_out, thread_count / 4);
-        fft(quarter, group_3_in, group_3_out, thread_count / 4);
+    if (T > 3) {
+        std::thread t1(fft, quarter, group_0_in, group_0_out, T / 4);
+        std::thread t2(fft, quarter, group_1_in, group_1_out, T / 4);
+        std::thread t3(fft, quarter, group_2_in, group_2_out, T / 4);
+        fft(quarter, group_3_in, group_3_out, T / 4);
 
         t1.join();
         t2.join();
         t3.join();
-    } else if (thread_count > 1) {
+    } else if (T > 1) {
         std::thread t([&] {
             fft(quarter, group_0_in, group_0_out);
             fft(quarter, group_1_in, group_1_out);

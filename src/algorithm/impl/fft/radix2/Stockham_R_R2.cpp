@@ -13,7 +13,7 @@ static void fft(const size_t n,
                 const bool eo,
                 ft_complex *x,
                 ft_complex *y,
-                const size_t thread_count = 1) {
+                const size_t T = 1) {
     if (n == 2) {
         ft_complex *z = eo ? y : x;
 
@@ -38,9 +38,9 @@ static void fft(const size_t n,
             FT_RMUL(y[q + s * (2 * p + 1)], w);
         }
 
-        if (thread_count > 1) {
-            std::thread t1(fft, half, 2 * s, q, !eo, y, x, thread_count / 2);
-            fft(half, 2 * s, q + s, !eo, y, x, thread_count / 2);
+        if (T > 1) {
+            std::thread t1(fft, half, 2 * s, q, !eo, y, x, T / 2);
+            fft(half, 2 * s, q + s, !eo, y, x, T / 2);
 
             t1.join();
         } else {

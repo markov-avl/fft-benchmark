@@ -6,7 +6,7 @@
 #include "algorithm.h"
 
 
-static void stockham_forward(const size_t n, ft_complex *sequence, const size_t thread_count = 1) {
+static void stockham_forward(const size_t n, ft_complex *sequence, const size_t T = 1) {
     auto *work_area = new ft_complex[n];
     ft_complex *x = sequence;
     ft_complex *y = work_area;
@@ -16,7 +16,8 @@ static void stockham_forward(const size_t n, ft_complex *sequence, const size_t 
         std::vector<std::thread> threads;
 
         auto task = [&](const size_t t) {
-            for (size_t p = t; p < half; p += thread_count) {
+            const auto [start, end] = thread_range(half, t, T);
+            for (size_t p = start; p < end; ++p) {
                 const double angle = static_cast<double>(p) * theta;
                 const ft_complex w = {std::cos(angle), -std::sin(angle)};
 
@@ -31,7 +32,7 @@ static void stockham_forward(const size_t n, ft_complex *sequence, const size_t 
             }
         };
 
-        for (size_t t = 1; t < thread_count; ++t) {
+        for (size_t t = 1; t < T; ++t) {
             threads.emplace_back(task, t);
         }
         task(0);
@@ -55,12 +56,12 @@ static void stockham_forward(const size_t n, ft_complex *sequence, const size_t 
     delete[] work_area;
 }
 
-static void stockham_inverse(const size_t n, ft_complex *sequence, const size_t thread_count = 1) {
+static void stockham_inverse(const size_t n, ft_complex *sequence, const size_t T = 1) {
     for (size_t i = 0; i < n; ++i) {
         FT_RCONJ(sequence[i]);
     }
 
-    stockham_forward(n, sequence, thread_count);
+    stockham_forward(n, sequence, T);
 
     for (size_t i = 0; i < n; ++i) {
         sequence[i][0] = sequence[i][0] / static_cast<double>(n);
@@ -76,19 +77,20 @@ void Bluestein_I_Stockham_R2::initialize(const size_t n, ft_complex *in, ft_comp
 
 void Bluestein_I_Stockham_R2::forward(const size_t n, ft_complex *in, ft_complex *out) {
     std::vector<std::thread> threads;
-    const size_t thread_count = get_max_threads();
+    const size_t T = get_max_threads();
     auto *u = new ft_complex[l];
     auto *v = new ft_complex[l];
 
     auto task = [&](const size_t t) {
-        for (size_t i = t; i < n; i += thread_count) {
+        const auto [start, end] = thread_range(n, t, T);
+        for (size_t i = start; i < end; ++i) {
             FT_POLAR(-std::numbers::pi * i * (static_cast<double>(i) / n), out[i]);
             FT_MUL(in[i], out[i], u[i]);
             FT_CONJ(v[i], out[i]);
         }
     };
 
-    for (size_t t = 1; t < thread_count; ++t) {
+    for (size_t t = 1; t < T; ++t) {
         threads.emplace_back(task, t);
     }
     task(0);
@@ -104,9 +106,9 @@ void Bluestein_I_Stockham_R2::forward(const size_t n, ft_complex *in, ft_complex
         FT_COPY(v[i], v[l - i]);
     }
 
-    if (thread_count > 1) {
-        std::thread t(stockham_forward, l, u, std::max(1ul, thread_count / 2));
-        stockham_forward(l, v, std::max(1ul, thread_count / 2));
+    if (T > 1) {
+        std::thread t(stockham_forward, l, u, std::max(1ul, T / 2));
+        stockham_forward(l, v, std::max(1ul, T / 2));
         t.join();
     } else {
         stockham_forward(l, u);
@@ -117,7 +119,7 @@ void Bluestein_I_Stockham_R2::forward(const size_t n, ft_complex *in, ft_complex
         FT_RMUL(u[i], v[i]);
     }
 
-    stockham_inverse(l, u, thread_count);
+    stockham_inverse(l, u, T);
 
     for (size_t i = 0; i < n; ++i) {
         FT_RMUL(out[i], u[i]);

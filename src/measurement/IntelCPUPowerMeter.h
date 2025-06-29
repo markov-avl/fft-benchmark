@@ -12,7 +12,7 @@ class IntelCPUPowerMeter final : public IMeasurer {
     std::vector<double> stop_energies;
 
 public:
-    static constexpr auto NAME = "intel-cpu-power";
+    static constexpr auto NAME = "cpu-power-meter";
 
     IntelCPUPowerMeter();
 

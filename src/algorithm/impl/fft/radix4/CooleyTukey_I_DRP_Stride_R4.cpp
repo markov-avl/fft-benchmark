@@ -7,11 +7,11 @@
 #include "algorithm/utils/operation.h"
 
 
-static void fft(const size_t n, ft_complex *out, const size_t thread_count = 1) {
+static void fft(const size_t n, ft_complex *out, const size_t T = 1) {
     for (size_t step = 4; step <= n; step <<= 2) {
         const size_t quarter = step / 4;
         const size_t groups = n / step;
-        const size_t threads_num = std::min(thread_count, groups);
+        const size_t threads_num = std::min(T, groups);
         std::vector<std::thread> threads;
 
         auto task = [&](const size_t t) {

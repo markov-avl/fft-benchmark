@@ -18,18 +18,18 @@ static void transform(const size_t half, ft_complex *data, const size_t from, co
     }
 }
 
-static void fft(const size_t n, ft_complex *data, const size_t thread_count = 1) {
+static void fft(const size_t n, ft_complex *data, const size_t T = 1) {
     if (n == 1) {
         return;
     }
 
     const size_t half = n / 2;
 
-    if (thread_count > 1) {
+    if (T > 1) {
         std::barrier barrier(2);
         const size_t batch_size = half / 2;
         auto task = [&](const size_t t) {
-            fft(half, data + t * half, thread_count / 2);
+            fft(half, data + t * half, T / 2);
             barrier.arrive_and_wait();
             transform(half, data, t * batch_size, (t + 1) * batch_size);
         };

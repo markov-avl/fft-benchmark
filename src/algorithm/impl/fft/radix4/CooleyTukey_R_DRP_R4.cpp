@@ -7,23 +7,23 @@
 #include "algorithm/utils/operation.h"
 
 
-static void fft(const size_t n, ft_complex *data, const size_t thread_count = 1) {
+static void fft(const size_t n, ft_complex *data, const size_t T = 1) {
     if (n == 1) {
         return;
     }
 
     const size_t quarter = n / 4;
 
-    if (thread_count > 3) {
-        std::thread t1(fft, quarter, data, thread_count / 4);
-        std::thread t2(fft, quarter, data + quarter, thread_count / 4);
-        std::thread t3(fft, quarter, data + 2 * quarter, thread_count / 4);
-        fft(quarter, data + 3 * quarter, thread_count / 4);
+    if (T > 3) {
+        std::thread t1(fft, quarter, data, T / 4);
+        std::thread t2(fft, quarter, data + quarter, T / 4);
+        std::thread t3(fft, quarter, data + 2 * quarter, T / 4);
+        fft(quarter, data + 3 * quarter, T / 4);
 
         t1.join();
         t2.join();
         t3.join();
-    } else if (thread_count > 1) {
+    } else if (T > 1) {
         auto task = [&](const size_t t) {
             fft(quarter, data + t * quarter);
             fft(quarter, data + (t + 2) * quarter);

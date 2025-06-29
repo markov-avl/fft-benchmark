@@ -20,7 +20,7 @@ void Stockham_I_TP_R2::forward(const size_t n, ft_complex *in, ft_complex *out) 
         return;
     }
 
-    const size_t thread_count = get_max_threads();
+    const size_t T = get_max_threads();
     ft_complex *x = in;
     ft_complex *y = out;
 
@@ -28,7 +28,8 @@ void Stockham_I_TP_R2::forward(const size_t n, ft_complex *in, ft_complex *out) 
         const double theta = std::numbers::pi / static_cast<double>(half);
 
         auto task = [&](const size_t t) {
-            for (size_t p = t; p < half; p += thread_count) {
+            const auto [start, end] = thread_range(half, t, T);
+            for (size_t p = start; p < end; ++p) {
                 const double angle = static_cast<double>(p) * theta;
                 const ft_complex w = {std::cos(angle), -std::sin(angle)};
 
@@ -43,7 +44,7 @@ void Stockham_I_TP_R2::forward(const size_t n, ft_complex *in, ft_complex *out) 
             }
         };
 
-        for (size_t t = 1; t < thread_count; ++t) {
+        for (size_t t = 1; t < T; ++t) {
             thread_pool->enqueue(task, t);
         }
         task(0);

@@ -21,16 +21,17 @@ static uint64_t quaternary_reverse64(size_t i, const size_t log4_n) {
 
 void quaternary_reversal_permutation(const size_t n, const ft_complex *in, ft_complex *out) {
     const size_t log4_n = std::countr_zero(n) / 2;
-    const size_t thread_count = get_max_threads();
+    const size_t T = get_max_threads();
     std::vector<std::thread> threads;
 
     auto permutate = [&](const size_t t) {
-        for (size_t i = t; i < n; i += thread_count) {
+        const auto [start, end] = thread_range(n, t, T);
+        for (size_t i = start; i < end; ++i) {
             FT_COPY(in[i], out[quaternary_reverse64(i, log4_n)]);
         }
     };
 
-    for (size_t i = 1; i < thread_count; ++i) {
+    for (size_t i = 1; i < T; ++i) {
         threads.emplace_back(permutate, i);
     }
     permutate(0);

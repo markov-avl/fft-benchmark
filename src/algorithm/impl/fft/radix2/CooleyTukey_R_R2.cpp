@@ -6,7 +6,7 @@
 #include "algorithm/utils/operation.h"
 
 
-static void fft(const size_t n, const ft_complex *in, ft_complex *out, const size_t thread_count = 1) {
+static void fft(const size_t n, const ft_complex *in, ft_complex *out, const size_t T = 1) {
     if (n == 1) {
         FT_COPY(in[0], out[0]);
         return;
@@ -23,9 +23,9 @@ static void fft(const size_t n, const ft_complex *in, ft_complex *out, const siz
         FT_COPY(in[2 * i + 1], odd_in[i]);
     }
 
-    if (thread_count > 1) {
-        std::thread t(fft, half, odd_in, odd_out, thread_count / 2);
-        fft(half, even_in, even_out, thread_count / 2);
+    if (T > 1) {
+        std::thread t(fft, half, odd_in, odd_out, T / 2);
+        fft(half, even_in, even_out, T / 2);
         t.join();
     } else {
         fft(half, even_in, even_out);

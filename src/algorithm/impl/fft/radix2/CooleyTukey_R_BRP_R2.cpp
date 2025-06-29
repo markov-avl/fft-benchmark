@@ -7,16 +7,16 @@
 #include "algorithm/utils/operation.h"
 
 
-static void fft(const size_t n, ft_complex *data, const size_t thread_count = 1) {
+static void fft(const size_t n, ft_complex *data, const size_t T = 1) {
     if (n == 1) {
         return;
     }
 
     const size_t half = n / 2;
 
-    if (thread_count > 1) {
-        std::thread thread_left(fft, half, data, thread_count / 2);
-        fft(half, data + half, thread_count / 2);
+    if (T > 1) {
+        std::thread thread_left(fft, half, data, T / 2);
+        fft(half, data + half, T / 2);
         thread_left.join();
     } else {
         fft(half, data);

@@ -13,7 +13,7 @@ void Stockham_I_R4::forward(const size_t n, ft_complex *in, ft_complex *out) {
         return;
     }
 
-    const size_t thread_count = get_max_threads();
+    const size_t T = get_max_threads();
     ft_complex *x = in;
     ft_complex *y = out;
 
@@ -25,7 +25,8 @@ void Stockham_I_R4::forward(const size_t n, ft_complex *in, ft_complex *out) {
         std::vector<std::thread> threads;
 
         auto task = [&](const size_t t) {
-            for (size_t p = t; p < n1; p += thread_count) {
+            const auto [start, end] = thread_range(n1, t, T);
+            for (size_t p = start; p < end; ++p) {
                 const double angle = static_cast<double>(p) * theta;
                 const ft_complex w1 = {std::cos(angle), -std::sin(angle)};
                 ft_complex w2, w3;
@@ -57,7 +58,7 @@ void Stockham_I_R4::forward(const size_t n, ft_complex *in, ft_complex *out) {
             }
         };
 
-        for (size_t t = 1; t < thread_count; ++t) {
+        for (size_t t = 1; t < T; ++t) {
             threads.emplace_back(task, t);
         }
         task(0);

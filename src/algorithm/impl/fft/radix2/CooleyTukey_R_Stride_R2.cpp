@@ -10,7 +10,7 @@ static void fft(const size_t n,
                 const ft_complex *in,
                 ft_complex *out,
                 const size_t step = 1,
-                const size_t thread_count = 1) {
+                const size_t T = 1) {
     if (n == 1) {
         FT_COPY(in[0], out[0]);
         return;
@@ -18,9 +18,9 @@ static void fft(const size_t n,
 
     const size_t half = n / 2;
 
-    if (thread_count > 1) {
-        std::thread t(fft, half, in + step, out + half, step << 1, thread_count / 2);
-        fft(half, in, out, step << 1, thread_count / 2);
+    if (T > 1) {
+        std::thread t(fft, half, in + step, out + half, step << 1, T / 2);
+        fft(half, in, out, step << 1, T / 2);
         t.join();
     } else {
         fft(half, in, out, step << 1);

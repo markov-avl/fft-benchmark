@@ -41,18 +41,21 @@ void IntelCPUPowerMeter::start() {
     for (const auto &p: energy_paths) {
         start_energies.push_back(read_energy(p));
     }
+    t0 = std::chrono::high_resolution_clock::now();
 }
 
 void IntelCPUPowerMeter::stop() {
     for (const auto &p: energy_paths) {
         stop_energies.push_back(read_energy(p));
     }
+    t1 = std::chrono::high_resolution_clock::now();
 }
 
 double IntelCPUPowerMeter::result() {
     if (start_energies.empty() || start_energies.size() != stop_energies.size()) {
         throw std::runtime_error("CPUPowerMeter: start/stop not called properly");
     }
+
     double total = 0.0;
     for (size_t i = 0; i < start_energies.size(); ++i) {
         double diff = stop_energies[i] - start_energies[i];
@@ -61,5 +64,6 @@ double IntelCPUPowerMeter::result() {
         }
         total += diff;
     }
-    return total / 1e6;
+
+    return total / 1e6 / std::chrono::duration_cast<std::chrono::duration<double> >(t1 - t0).count();
 }

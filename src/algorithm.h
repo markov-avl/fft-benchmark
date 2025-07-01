@@ -16,6 +16,7 @@
 #include "algorithm/impl/fft/radix2/CooleyTukey_R_BRP_R2.h"
 #include "algorithm/impl/fft/radix2/CooleyTukey_R_R2.h"
 #include "algorithm/impl/fft/radix2/CooleyTukey_R_Stride_R2.h"
+#include "algorithm/impl/fft/radix2/Stockham_I_Barrier_R2.h"
 #include "algorithm/impl/fft/radix2/Stockham_I_R2.h"
 #include "algorithm/impl/fft/radix2/Stockham_I_TP_R2.h"
 #include "algorithm/impl/fft/radix2/Stockham_R_R2.h"
@@ -44,6 +45,7 @@ static const std::map<std::string, std::shared_ptr<IFourierTransformAlgorithm> >
     {CooleyTukey_R_BRP_R2::NAME, std::make_shared<CooleyTukey_R_BRP_R2>()},
     {CooleyTukey_R_R2::NAME, std::make_shared<CooleyTukey_R_R2>()},
     {CooleyTukey_R_Stride_R2::NAME, std::make_shared<CooleyTukey_R_Stride_R2>()},
+    {Stockham_I_Barrier_R2::NAME, std::make_shared<Stockham_I_Barrier_R2>()},
     {Stockham_I_R2::NAME, std::make_shared<Stockham_I_R2>()},
     {Stockham_I_TP_R2::NAME, std::make_shared<Stockham_I_TP_R2>()},
     {Stockham_R_R2::NAME, std::make_shared<Stockham_R_R2>()},

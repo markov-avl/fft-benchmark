@@ -5,9 +5,9 @@
 #include <thread>
 #include <vector>
 
+#include "multiprocessing.h"
 #include "algorithm/utils/brp.h"
 #include "algorithm/utils/operation.h"
-#include "multiprocessing.h"
 
 
 static void fft(const size_t n, ft_complex *out, const size_t T = 1) {

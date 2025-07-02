@@ -103,6 +103,9 @@ size_t get_testing_sequence_size(const IFourierTransformAlgorithm *algorithm) {
         if (algorithm->supported_sequences() & RADIX_5) {
             n *= 3125;
         }
+        if (algorithm->supported_sequences() & RADIX_8) {
+            n *= 262144;
+        }
     }
 
     return n;

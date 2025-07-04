@@ -1,4 +1,5 @@
 #include "IntelCPUPowerMeter.h"
+
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -41,14 +42,12 @@ void IntelCPUPowerMeter::start() {
     for (const auto &p: energy_paths) {
         start_energies.push_back(read_energy(p));
     }
-    t0 = std::chrono::high_resolution_clock::now();
 }
 
 void IntelCPUPowerMeter::stop() {
     for (const auto &p: energy_paths) {
         stop_energies.push_back(read_energy(p));
     }
-    t1 = std::chrono::high_resolution_clock::now();
 }
 
 double IntelCPUPowerMeter::result() {
@@ -65,5 +64,5 @@ double IntelCPUPowerMeter::result() {
         total += diff;
     }
 
-    return total / 1e6 / std::chrono::duration_cast<std::chrono::duration<double> >(t1 - t0).count();
+    return total;
 }
